@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>huskieforce Administration UI</title>
+    <link rel="stylesheet" href="huskieforce.css" />
+  </head>
+  <body>
+    <!-- Logo -->
+    <div class="huskieforceLogo">
+      <img src="huskieforce.png" />
+    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <!-- UI Buttons -->
+    <div class="UIButtons">
+      <a href="huskieforce.html" class="button">Draft</a>
+      <a href="huskieforceFinalize.html" class="button">Finalize</a>
+      <a href="huskieforcePurchase.html" class="button">Purchase</a>
+      <a href="huskieforceAdmin.html" class="button">Administration</a>
+    </div>
+    <br />
+    <br />
+    <div class="aandq">
+      <div class="asInfo">
+        <button class="button">Associates</button>
+        <!-- Search Associates Information -->
+        <div class="searchInfo">
+          <br />
+          <input type="text" placeholder="Search" name="searchAssocInfo" />
+        </div>
+        <!-- Associate Name, Address, User ID, Password, Total Commission -->
+        <p>
+          Associate Name:<br />
+          Address:<br />
+          User ID:<br />
+          Password:<br />
+          Total Commission ($): <br />
+          <button class="addRecord">View</button>
+        </p>
+        <button class="addQuote">+</button>
+        <button class="editQuote">~</button>
+        <button class="deleteQuote">x</button>
+      </div>
+
+      <!-- Status, Date Processed, Sales Associate, Customer -->
+      <div class="quInfo">
+        <button class="button">Quotes</button>
+        <!-- Search Quotes Information -->
+        <div class="searchInfo">
+          <br />
+          <input type="text" placeholder="Search" name="searchAssocInfo" />
+        </div>
+        <p>
+          Status:<br />
+          Date Processed:<br />
+          Sales Associate:<br />
+          Customer:<br />
+          <button class="addRecord">View</button>
+        </p>
+        <button class="addQuote">+</button>
+        <button class="editQuote">~</button>
+        <button class="deleteQuote">x</button>
+      </div>
+    </div>
+
+    <div class="Copyright">
+      <!-- Copyright Information -->
+      <p>© Copyright 2025 Huskieforce, Inc</p>
+    </div>
+    <script src="scripts.js"></script>
+  </body>
+</html>
