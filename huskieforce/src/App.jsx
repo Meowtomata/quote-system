@@ -10,8 +10,8 @@ function App() {
     <>
     <Header />
     <Buttons />
-    <CopyRight />
     <QuoteDiscount />
+    <CopyRight />
     </>
   );
 }
