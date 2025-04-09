@@ -20,7 +20,7 @@ app.get('/data', async (req, res) => {
     let conn;
     try {
         conn = await pool.getConnection();
-        const rows = await conn.query('SELECT * FROM users');
+        const rows = await conn.query('SHOW TABLES');
         res.json(rows);
     } catch (err) {
         console.error(err);
