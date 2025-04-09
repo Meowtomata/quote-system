@@ -1,8 +1,17 @@
 require('dotenv').config();
 const express = require('express');
-const mariadb = require('mariadb');
+const app = express();
+const port = 3000;
+
+const cors = require("cors");
+const corsOptions = {
+    origin: ["https://localhost:5173"],
+};
+
+app.use(cors(corsOptions));
 
 // Create connection pool
+const mariadb = require('mariadb');
 const pool = mariadb.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -11,10 +20,6 @@ const pool = mariadb.createPool({
     port: process.env.DB_PORT,
     connectionLimit: 5
 });
-
-const app = express();
-const port = 3000;
-
 // Example endpoint to fetch data
 app.get('/data', async (req, res) => {
     let conn;
