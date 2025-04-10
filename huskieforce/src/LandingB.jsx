@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import QuoteForm from './QuoteForm';
 import QuoteEditor from './QuoteEditor';
 
-function QuoteDiscount() {
+function LandingB() {
   const [lineItems, setLineItems] = useState([]);
 
   return (
@@ -13,4 +13,4 @@ function QuoteDiscount() {
   );
 }
 
-export default QuoteDiscount;
+export default LandingB;
