@@ -21,15 +21,29 @@ const pool = mariadb.createPool({
     connectionLimit: 5
 });
 // Example endpoint to fetch data
-app.get('/data', async (req, res) => {
+app.get('/customers', async (req, res) => {
     let conn;
     try {
         conn = await pool.getConnection();
-        const rows = await conn.query('SHOW TABLES');
+        const rows = await conn.query('SELECT * FROM customers');
         res.json(rows);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Database error' });
+        res.status(500).json({ error: '`SELECT * FROM customers` failed' });
+    } finally {
+        if (conn) conn.end();
+    }
+});
+
+app.get('/parts', async (req, res) => {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const rows = await conn.query('SELECT * FROM parts');
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: '`SELECT * FROM parts` failed' });
     } finally {
         if (conn) conn.end();
     }
