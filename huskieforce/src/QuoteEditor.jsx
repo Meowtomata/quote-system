@@ -103,7 +103,7 @@ function QuoteEditor({ lineItems = [] }) {
       />
       <button onClick={calculateDiscount}>APPLY DISCOUNT</button>
       <p>TOTAL BEFORE DISCOUNT: ${totalBeforeDiscount.toFixed(2)}</p>
-      <p>TOTAK AFTER DISCOUNT: ${finalTotal.toFixed(2)}</p>
+      <p>TOTAL AFTER DISCOUNT: ${finalTotal.toFixed(2)}</p>
     </>
   );
 }

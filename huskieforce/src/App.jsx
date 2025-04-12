@@ -3,15 +3,17 @@ import CopyRight from "./HuskieForceCR.jsx";
 import Buttons from "./Buttons.jsx";
 import QuoteForm from "./QuoteForm.jsx";
 import QuoteEditor from "./QuoteEditor.jsx";
-import QuoteDiscount from "./QuoteDiscount.jsx";
+import LandingA from "./LandingA.jsx";
+import LandingB from "./LandingB.jsx";
 
 function App() {
   return(
     <>
     <Header />
     <Buttons />
+    <LandingA />
+    <LandingB />
     <CopyRight />
-    <QuoteDiscount />
     </>
   );
 }
