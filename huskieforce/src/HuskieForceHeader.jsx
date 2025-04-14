@@ -2,7 +2,7 @@ import logo from './assets/huskieforce.png'
 
 function Header() {
     return(
-        <div class="huskieforceLogo">
+        <div className="huskieforceLogo">
         <img src={logo} />
     </div>
     );

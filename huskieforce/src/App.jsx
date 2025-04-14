@@ -118,7 +118,7 @@ function App() {
       const response = await axios.post('http://localhost:3000/api/quotes', payload);
       // ... success handling ...
       setShowQuoteInterface(false); 
-    } catch (error) {
+    } catch (err) {
       // ... error handling ... 
        console.error("Error fetching data:", err);
        setError(err.message || "Failed to fetch customer data."); // Set error message
