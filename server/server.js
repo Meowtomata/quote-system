@@ -166,6 +166,9 @@ app.get('/api/parts', async (req, res) => {
     }
 });
 
+// --- 404 Handler (Define AFTER all other routes) ---
+app.use((req, res) => {
+    res.status(404).json({ "error": "Endpoint not found" });
 });
 // --- Graceful Shutdown for BOTH Databases ---
 process.on('SIGINT', async () => {
