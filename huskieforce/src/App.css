@@ -1,3 +1,39 @@
+/* App.css */
+.App-container {
+  position: relative; /* Allow for overlay */
+
+}
+/* OverlayComponent.css */
+.overlay {
+  /* --- Key Part 2 --- */
+  position: absolute; /* Position relative to the nearest positioned ancestor */
+  /* --- */
+
+  /* Positioning within the relative parent */
+  top: 50px; /* Example: 50px from the top of App-container */
+  left: 50px; /* Example: 50px from the left of App-container */
+  /* Or use top: 50%; left: 50%; transform: translate(-50%, -50%); for centering */
+
+  /* --- Key Part 3 --- */
+  z-index: 10; /* Ensures it appears above other non-positioned/lower z-index content */
+  /* --- */
+
+  /* Visual styling */
+  background-color: rgba(0, 0, 255, 1); /* Semi-transparent blue */
+  color: white;
+  padding: 25px;
+  border: 1px solid darkblue;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Optional: Style for the close button */
+.overlay-close-button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700;900&display=swap");
 
 body {
@@ -6,6 +42,30 @@ body {
   text-transform: uppercase;
   font-weight: 390;
   font-style: normal;
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+textarea,
+input {
+  color: black;
 }
 
 .huskieforceLogo {
@@ -13,48 +73,6 @@ body {
   border-radius: 1px;
   text-align: left;
 }
-.UIButtons {
-  padding: 10px;
-  border-radius: 1px;
-  text-align: center;
-}
-
-.button,
-.sentToCus,
-.finButton,
-.sancButton,
-.statusButton {
-  background-color: #b3aeae;
-  color: rgb(255, 255, 255);
-  padding: 8px 18px;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
-  text-decoration: none;
-  text-transform: uppercase;
-  font-family: "Roboto", sans-serif;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-.button:hover,
-.sentToCus:hover,
-.finButton:hover,
-.sancButton:hover,
-.statusButton:hover {
-  background-color: #353535;
-  transform: scale(1.025);
-}
-
-.button:active,
-.sentToCus:active,
-.finButton:active,
-.sancButton:active,
-.statusButton:active {
-  background-color: #353535;
-  transform: scale(0.95);
-}
-
 .Quote {
   padding: 10px;
   border-radius: 1px;
@@ -312,6 +330,7 @@ textarea {
 select {
   background-color: rgb(251, 251, 251);
   border: 1px solid rgb(251, 251, 251);
+  color: black;
   padding: 0px;
   font-size: 16px;
   border-radius: 5px;
@@ -321,4 +340,33 @@ select {
 .Copyright {
   text-align: center;
   font-size: 10px;
+}
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #3c3c3c;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
 }

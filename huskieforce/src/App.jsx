@@ -8,6 +8,8 @@ import QuoteEditor from "./QuoteEditor.jsx";
 import LandingA from "./LandingA.jsx";
 import LandingB from "./LandingB.jsx";
 import CustomerSelector from './CustomerSelector.jsx';
+import './App.css'
+
 
 function App() {
   // customer array will be retrieved from legacy database
@@ -53,6 +55,7 @@ function App() {
 
   return(
     <>
+    <div className="App-container">
     <Header />
     <Buttons />
     <LandingA />
@@ -65,6 +68,7 @@ function App() {
         />
     <CopyRight />
     </>
+    </div>
   );
 }
 
