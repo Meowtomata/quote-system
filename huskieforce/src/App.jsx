@@ -12,6 +12,7 @@ import './App.css'
 function App() {
   // customer array will be retrieved from legacy database
   const [customers, setCustomers] = useState([]); 
+  const [salesAssociates, setSalesAssociates] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // State to track loading
   const [error, setError] = useState(null);          // State to track errors
 
@@ -54,24 +55,42 @@ function App() {
   // when clicking add new quote, display quote interface
   const [showQuoteInterface, setShowQuoteInterface] = useState(false); 
 
-  // fetch data from API
   useEffect(() => {
     const fetchAPI = async () => {
-      setIsLoading(true); // Start loading
-      setError(null);     // Reset error state
+      setIsLoading(true);
+      setError(null);
+      // Clear previous data on new fetch attempt
+      setCustomers([]);
+      setSalesAssociates([]);
+
       try {
-        const response = await axios.get("http://localhost:3000/api/customers");
-        setCustomers(response.data); // Set the fetched data
-        console.log("Data fetched:", response.data);
+        // Create promises for both requests
+        const customerPromise = axios.get("http://localhost:3000/api/customers");
+        const salesAssociatePromise = axios.get("http://localhost:3000/api/sales-associates");
+
+        // Wait for both promises to resolve concurrently
+        const [customerResponse, salesAssociateResponse] = await Promise.all([
+          customerPromise,
+          salesAssociatePromise
+        ]);
+
+        // Both requests were successful
+        setCustomers(customerResponse.data);
+        setSalesAssociates(salesAssociateResponse.data);
+
+        console.log("Customer Data fetched:", customerResponse.data);
+        console.log("Sales Associate Data fetched:", salesAssociateResponse.data);
+
       } catch (err) {
         console.error("Error fetching data:", err);
-        setError(err.message || "Failed to fetch customer data."); // Set error message
-        setCustomers([]); // Clear data on error
+        // Determine which request failed if needed, or set a general error
+        setError(err.message || "Failed to fetch initial data.");
+        // Keep data cleared as set at the start of the try block
       } finally {
-        setIsLoading(false); // Stop loading regardless of success or error
+        setIsLoading(false);
       }
     };
-;
+
     fetchAPI();
   }, []); // Empty dependency array means this runs once on component mount
 
