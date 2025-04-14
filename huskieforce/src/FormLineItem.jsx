@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function QuoteForm({ lineItems = [], setLineItems }) {
+function FormLineItem({ lineItems = [], setLineItems }) {
     const [newItem, setNewItem] = useState({ name: '', price: '' });
   
     const handleInputChange = (e) => {
@@ -12,7 +12,7 @@ function QuoteForm({ lineItems = [], setLineItems }) {
       if (newItem.name && newItem.price) {
         setLineItems([
           ...lineItems,
-          { ...newItem, id: Date.now(), editing: false }
+          { ...newItem, editing: false }
         ]);
         setNewItem({ name: '', price: '' });
       }
@@ -87,4 +87,4 @@ function QuoteForm({ lineItems = [], setLineItems }) {
     );
   }
   
-  export default QuoteForm;
+  export default FormLineItem;

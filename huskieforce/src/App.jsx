@@ -3,10 +3,8 @@ import axios from 'axios';
 import Header from "./HuskieForceHeader.jsx"
 import CopyRight from "./HuskieForceCR.jsx";
 import Buttons from "./Buttons.jsx";
-import QuoteForm from "./QuoteForm.jsx";
-import QuoteEditor from "./QuoteEditor.jsx";
-import LandingA from "./LandingA.jsx";
-import LandingB from "./LandingB.jsx";
+import QuoteInterface from "./QuoteInterface.jsx";
+import QuoteList from "./QuoteList.jsx";
 import CustomerSelector from './CustomerSelector.jsx';
 import './App.css'
 
@@ -16,7 +14,46 @@ function App() {
   const [customers, setCustomers] = useState([]); 
   const [isLoading, setIsLoading] = useState(false); // State to track loading
   const [error, setError] = useState(null);          // State to track errors
+
+
+    // Generic updater for simple fields like email, discountAmount, isPercentage
+    const updateQuoteField = useCallback((fieldName, value) => {
+        setQuoteInfo(prevQuoteInfo => ({
+            ...prevQuoteInfo, // Copy previous state
+            [fieldName]: value // Update the specific field using computed property name
+        }));
+    }, []); // Empty dependency array is fine as setQuoteInfo is stable
+
+    // Specific updater for lineItems array
+    const updateLineItems = useCallback((newLineItems) => {
+        // You might add validation here if needed (e.g., ensure it's an array)
+        setQuoteInfo(prevQuoteInfo => ({
+            ...prevQuoteInfo,
+            lineItems: newLineItems // Replace the entire lineItems array
+        }));
+    }, []);
+
+    // Specific updater for secretNotes array
+    const updateSecretNotes = useCallback((newSecretNotes) => {
+        setQuoteInfo(prevQuoteInfo => ({
+            ...prevQuoteInfo,
+            secretNotes: newSecretNotes // Replace the entire secretNotes array
+        }));
+    }, []);
+
   const [quoteInfo, setQuoteInfo] = useState({
+    "customerID" : 1,
+    "email" : '',
+    "lineItems" : [],
+    "secretNotes" : [],
+    "discountAmount" : 0,
+    "isPercentage" : true,
+    });
+
+
+  // when clicking add new quote, display quote interface
+  const [showQuoteInterface, setShowQuoteInterface] = useState(false); 
+
   // fetch data from API
   useEffect(() => {
     const fetchAPI = async () => {
@@ -54,23 +91,33 @@ function App() {
   };
 
   return(
-    <>
     <div className="App-container">
     <Header />
     <Buttons />
-    <LandingA />
-    <LandingB />
     <CustomerSelector 
         customers={customers} 
         selectedID={quoteInfo.customerID}
         setCustomerID={(value) => updateQuoteField('customerID', value)}
         onAddNewQuote={handleAddNewQuoteClick}
         />
+    {showQuoteInterface && (
+        <div className="overlay">
+            <QuoteInterface
+                // Pass the data object
+                quoteInfo={quoteInfo}
+                // Pass the specific update functions
+                updateQuoteField={updateQuoteField}
+                updateLineItems={updateLineItems}
+                updateSecretNotes={updateSecretNotes}
+                handleCreateQuote={handleCreateQuote}
+                setShowQuoteInterface={setShowQuoteInterface}
+                isLoading={isLoading}
+            />
+        </div>
+    )}
     <CopyRight />
-    </>
     </div>
   );
 }
 
-export default App
 export default App;
