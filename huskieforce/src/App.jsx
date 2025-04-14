@@ -51,6 +51,14 @@ function App() {
     "isPercentage" : true,
     });
 
+  const [salesAssociateInfo, setSalesAssociateInfo] = useState({
+    "name" : '',
+    "userID" : '',
+    "password" : '',
+    "address" : '',
+    "commissionToInsert" : 0
+  });
+
 
   // when clicking add new quote, display quote interface
   const [showQuoteInterface, setShowQuoteInterface] = useState(false); 
@@ -140,7 +148,44 @@ function App() {
     } catch (err) {
       // ... error handling ... 
        console.error("Error fetching data:", err);
-       setError(err.message || "Failed to fetch customer data."); // Set error message
+       setError(err.message || "Failed to send quotes data."); // Set error message
+    } finally {
+       setIsLoading(false);
+    }
+  };
+
+  const handleCreateAssociate = async () => {
+    console.log("--- handleCreateAssociate Executing ---");
+    const payload = {
+        "name" : 'Steve',
+        "userId" : 'Mine',
+        "password" : 'craft',
+        "address" : 'Overworld',
+        "commissionToInsert" : 10000
+        };
+
+    console.log("salesAssociateInfo at execution time:", JSON.stringify(payload));
+
+    setIsLoading(true);
+
+    /*
+    const payload = {
+      name: salesAssociateInfo.name,
+      userId: salesAssociateInfo.userID,
+      password: salesAssociateInfo.password,
+      address: salesAssociateInfo.address,
+      commissionToInsert: salesAssociateInfo.commisionToInsert
+    };
+    */
+
+    console.log("Payload being sent:", JSON.stringify(payload));
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/sales-associates', payload);
+    } catch (err) {
+      // ... error handling ... 
+       console.error("Error fetching data:", err);
+       setError(err.message || "Failed to send salesAssociateInfo."); // Set error message
     } finally {
        setIsLoading(false);
     }
@@ -173,6 +218,7 @@ function App() {
         </div>
     )}
     <CopyRight />
+    <button onClick={handleCreateAssociate}>Test Button for Sales Associate</button>
     </div>
   );
 }

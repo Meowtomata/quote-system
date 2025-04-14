@@ -155,6 +155,86 @@ app.get('/api/sales-associates', (req, res) => {
     });
 });
 
+// POST Endpoint for Creating Sales Associates (Uses SQLite)
+app.post('/api/sales-associates', (req, res) => {
+    const requestId = Date.now(); // Simple unique ID for logging
+    console.log(`[${requestId}] POST /api/sales-associates - Request received.`);
+    if (!db) return res.status(503).json({"error": "SQLite database not ready"}); // Check SQLite connection
+    console.log("POST /api/sales-associates (SQLite) - Received body:", req.body);
+
+    // --- 1. Extract and Validate Data ---
+    // Use camelCase for JS variables, map to table columns later
+    const { name, userId, password, address, accumulatedCommission } = req.body;
+
+    // --- Basic Validation ---
+    const errors = [];
+    if (!name || typeof name !== 'string' || name.trim() === '') {
+        errors.push("Valid 'name' (string) is required.");
+    }
+    if (!userId || typeof userId !== 'string' || userId.trim() === '') {
+        errors.push("Valid 'userId' (string) is required.");
+    }
+    if (!password || typeof password !== 'string' || password.trim() === '') {
+        // !! SECURITY WARNING !! Passwords should NEVER be stored in plaintext.
+        // Implement hashing (e.g., bcrypt) before storing in a real application.
+        errors.push("Valid 'password' (string) is required.");
+    }
+    if (!address || typeof address !== 'string' || address.trim() === '') {
+        errors.push("Valid 'address' (string) is required.");
+    }
+    let commissionToInsert = 0; // Default value
+    if (accumulatedCommission != null) { // Check if it was provided (could be 0)
+        commissionToInsert = parseFloat(accumulatedCommission);
+        if (isNaN(commissionToInsert)) {
+            errors.push("'accumulatedCommission' must be a valid number if provided.");
+        }
+    }
+
+    if (errors.length > 0) {
+        console.log(`[${requestId}] Validation errors:`, errors);
+        return res.status(400).json({ error: errors.join(', ') });
+    }
+
+    // --- 2. Database Interaction (SQLite) ---
+    const sql = `
+        INSERT INTO Sales_Associate
+            (Name, User_ID, Password, Address, Accumulated_Commission)
+        VALUES (?, ?, ?, ?, ?);
+    `;
+    const params = [name, userId, password, address, commissionToInsert];
+
+    console.log(`[${requestId}] Running INSERT INTO Sales_Associate with User_ID: ${userId}`);
+    // !! SECURITY TODO: Hash the 'password' parameter here before inserting !!
+    db.run(sql, params, function (err) { // Use a regular function to access `this.lastID`
+        if (err) {
+            console.error(`[${requestId}] SQLite Sales_Associate Insert Error:`, err);
+            // Check for unique constraint violation (likely User_ID)
+            if (err.code === 'SQLITE_CONSTRAINT' && err.message.includes('UNIQUE constraint failed: Sales_Associate.User_ID')) {
+                 return res.status(409).json({ // 409 Conflict is appropriate for duplicate unique keys
+                    error: "User_ID already exists.",
+                    details: err.message
+                });
+            }
+            // Handle other potential database errors
+            return res.status(500).json({
+                error: "Failed to create Sales Associate.",
+                details: err.message
+            });
+        }
+
+        // Success!
+        const newAssociateId = this.lastID; // Get the SA_ID of the inserted row
+        console.log(`[${requestId}] SQLite: Sales Associate inserted SA_ID: ${newAssociateId}`);
+        res.status(201).json({ // 201 Created status code
+            message: "Sales Associate created successfully (SQLite)",
+            salesAssociateId: newAssociateId,
+            userId: userId // Optionally return some inserted data for confirmation
+        });
+    });
+});
+
+// --- Make sure your other existing code (db connection, app setup, etc.) remains ---
+
 // GET Sales Associates
 app.get('/api/quotes', (req, res) => {
     if (!db) return res.status(503).json({"error": "SQLite database not ready"}); // Check SQLite connection
