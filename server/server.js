@@ -4,6 +4,23 @@ const mariadb = require('mariadb'); // MariaDB driver
 const sqlite3 = require('sqlite3').verbose(); // SQLite driver
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
+
+let schemaSql;
+const schemaFilePath = path.join(__dirname, 'schema.sql'); // Construct path relative to this script
+
+try {
+    // Read the SQL schema file synchronously
+    // Using readFileSync is often acceptable here because schema loading
+    // usually happens once at startup and needs to complete before proceeding.
+    schemaSql = fs.readFileSync(schemaFilePath, 'utf8');
+    console.log("Successfully loaded schema from schema.sql");
+
+} catch (err) {
+    console.error("Error reading schema file:", schemaFilePath, err);
+    // Decide how to handle the error: exit, use a default, etc.
+    process.exit(1); // Exit if schema can't be loaded
+}
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -59,50 +76,6 @@ async function initializeSqliteDatabase() {
                 } else {
                     console.log("SQLite: Foreign key enforcement is on.");
                 }
-
-                // Your CORRECTED SQL Schema Script for SQLite
-                const schemaSql = `
-                    -- Table: Sales_Associate
-                    CREATE TABLE IF NOT EXISTS Sales_Associate (
-                        SA_ID INT PRIMARY KEY,
-                        Name TEXT,
-                        User_ID TEXT UNIQUE,
-                        Password TEXT,
-                        Address TEXT,
-                        Accumulated_Commission REAL 
-                    );
-
-                    -- Table: Quotes
-                    CREATE TABLE IF NOT EXISTS Quotes (
-                        QU_ID INTEGER PRIMARY KEY AUTOINCREMENT, -- Quote ID
-                        SA_ID INTEGER,             -- Sales Associate ID
-                        CU_ID INTEGER,             -- Customer ID
-                        Status TEXT,
-                        Discount_Amount REAL,
-                        isPercentage INT,
-                        Created_Date DATE DEFAULT CURRENT_TIMESTAMP,
-                        Finalized_Date DATE,
-                        FOREIGN KEY (SA_ID) REFERENCES Sales_Associate(SA_ID)
-                    );
-
-                    -- Table: Line_Item
-                    CREATE TABLE IF NOT EXISTS Line_Item (
-                        LI_ID INTEGER PRIMARY KEY,
-                        QU_ID INTEGER,
-                        Description TEXT,
-                        Price REAL,
-                        FOREIGN KEY (QU_ID) REFERENCES Quotes(QU_ID)
-                    );
-
-                    -- Table: SecretNotes
-                    CREATE TABLE IF NOT EXISTS SecretNotes (
-                        SN_ID INTEGER PRIMARY KEY,
-                        QU_ID INTEGER,
-                        NoteText TEXT,
-                        FOREIGN KEY (QU_ID) REFERENCES Quotes(QU_ID)
-                    );
-                `; // Removed trailing comma, added IF NOT EXISTS, adjusted types
-
                 db.exec(schemaSql, (execErr) => {
                     if (execErr) {
                         // Log non-critically, might just mean tables exist
