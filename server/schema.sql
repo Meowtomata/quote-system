@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS Sales_Associate (
-    SA_ID INT PRIMARY KEY,
+    SA_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     Name TEXT,
     User_ID TEXT UNIQUE,
     Password TEXT,
     Address TEXT,
-    Accumulated_Commission REAL 
+    Accumulated_Commission REAL DEFAULT 0
 );
 
 -- Table: Quotes
@@ -37,3 +37,5 @@ CREATE TABLE IF NOT EXISTS SecretNotes (
     FOREIGN KEY (QU_ID) REFERENCES Quotes(QU_ID)
 );
 
+INSERT INTO Sales_Associate (SA_ID, Name, User_ID, Password, Address)
+VALUES (1, "Samantha", "Username123", "Password123", "123 Address Lane");

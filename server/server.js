@@ -57,7 +57,7 @@ try {
 
 
 // --- SQLite Database Connection & Setup (for Quotes) ---
-const DBSOURCE = path.resolve(__dirname, "mydatabase.db");
+const DBSOURCE = path.resolve(__dirname, "quoteDatabase.db");
 let db; // Declare SQLite db variable
 
 // Function to initialize SQLite DB (makes startup cleaner)
