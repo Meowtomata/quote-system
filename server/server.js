@@ -166,6 +166,25 @@ app.get('/api/parts', async (req, res) => {
     }
 });
 
+
+// --- SQLite Routes ---
+
+// GET Sales Associates
+app.get('/api/sales-associates', (req, res) => {
+    if (!db) return res.status(503).json({"error": "SQLite database not ready"}); // Check SQLite connection
+    db.all("SELECT SA_ID, Name, User_ID, Address, Accumulated_Commission FROM Sales_Associate", [], (err, rows) => { // Use SQLite 'db'
+         if (err) {
+             console.error("SQLite Error fetching sales associates:", err.message);
+             res.status(500).json({"error": "SQLite query failed", "details": err.message});
+             return;
+         }
+         res.json({
+             "message": "success (SQLite)",
+             "data": rows
+         });
+    });
+});
+
 // --- 404 Handler (Define AFTER all other routes) ---
 app.use((req, res) => {
     res.status(404).json({ "error": "Endpoint not found" });
