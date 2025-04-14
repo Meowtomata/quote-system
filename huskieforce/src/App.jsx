@@ -90,6 +90,43 @@ function App() {
     setShowQuoteInterface(true);
   };
 
+
+  const handleCreateQuote = async () => {
+    console.log("--- handleCreateQuote Executing ---");
+    // Now reads the LATEST quoteInfo state directly from App.jsx
+    console.log("QuoteInfo at execution time:", JSON.stringify(quoteInfo));
+
+    if (quoteInfo.lineItems.length === 0) { /* validation */ return; }
+
+    setIsLoading(true);
+    // set up information for Quote query
+    const payload = {
+      customerId: quoteInfo.customerID,
+      discountAmount: parseFloat(quoteInfo.discountAmount) || 0,
+      isPercentage: quoteInfo.isPercentage,
+      lineItems: quoteInfo.lineItems.map(item => ({
+          description: item.description, // Adjust key if needed
+          price: parseFloat(item.price) || 0
+      })),
+      secretNotes: quoteInfo.secretNotes.map(note => ({
+          noteText: note.text // Adjust key if needed
+      })),
+    };
+    console.log("Payload being sent:", JSON.stringify(payload));
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/quotes', payload);
+      // ... success handling ...
+      setShowQuoteInterface(false); 
+    } catch (error) {
+      // ... error handling ... 
+       console.error("Error fetching data:", err);
+       setError(err.message || "Failed to fetch customer data."); // Set error message
+    } finally {
+       setIsLoading(false);
+    }
+  };
+
   return(
     <div className="App-container">
     <Header />

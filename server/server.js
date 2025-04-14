@@ -185,10 +185,127 @@ app.get('/api/sales-associates', (req, res) => {
     });
 });
 
+// POST Endpoint for Creating Quotes (Uses SQLite)
+app.post('/api/quotes', (req, res) => {
+    const requestId = Date.now(); // Simple unique ID for logging
+    console.log(`[${requestId}] POST /api/quotes - Request received.`);
+    if (!db) return res.status(503).json({"error": "SQLite database not ready"}); // Check SQLite connection
+    console.log("POST /api/quotes (SQLite) - Received body:", req.body);
+
+    // --- 1. Extract and Validate Data ---
+    const { customerId, discountAmount, isPercentage, lineItems, secretNotes } = req.body;
+    const salesAssociateId = 1; // !! Replace with actual auth logic !!
+
+    // --- Basic Validation ---
+    const errors = [];
+    if (customerId == null || customerId < 0) errors.push("Valid Customer ID required (from MariaDB source).");
+    // ... (Add more robust validation as before) ...
+    if (!Array.isArray(lineItems) || lineItems.length === 0) errors.push("Need line items.");
+    if (errors.length > 0) return res.status(400).json({ error: errors.join(', ') });
+
+    const createdDate = new Date().toISOString();
+    const defaultStatus = 'Draft';
+
+    // --- 2. Database Transaction (SQLite) ---
+    db.serialize(() => { // Use SQLite 'db'
+        db.run('BEGIN TRANSACTION;', (err) => {
+            if (err) { /* handle error */ return res.status(500).json({ error: "SQLite TX Begin Error" }); }
+
+            const quoteSql = `INSERT INTO Quotes (SA_ID, CU_ID, Discount_Amount, isPercentage) VALUES (?, ?, ?, ?)`;
+            const quoteParams = [salesAssociateId, customerId, discountAmount, isPercentage];
+
+            console.log(`Running INSERT INTO Quotes with values ${salesAssociateId}, ${customerId}, ${discountAmount}, ${isPercentage}`)
+            db.run(quoteSql, quoteParams, function (err) {
+                if (err) { console.log(err); db.run('ROLLBACK'); return res.status(500).json({ error: "SQLite Quote Insert Error" }); }
+                const quoteId = this.lastID;
+                console.log(`SQLite: Quote inserted QU_ID: ${quoteId}`);
+                handleLineItemsInsert(res, db, quoteId, lineItems, secretNotes); // Proceed to line items
+            });
+        });
+    });
+});
+
+// --- Helper Functions for SQLite Quote Creation ---
+// Helper to insert Line Items then call Secret Notes helper
+function handleLineItemsInsert(res, db, quoteId, lineItems, secretNotes) {
+    const lineItemSql = 'INSERT INTO Line_Item (QU_ID, Description, Price) VALUES (?, ?, ?)';
+    let lineItemInsertError = null;
+    let itemsProcessed = 0;
+    const itemsToProcess = lineItems.length;
+
+    lineItems.forEach((item) => {
+        const price = parseFloat(item.price); // Ensure price is numeric
+        if (isNaN(price)) {
+             lineItemInsertError = new Error(`Invalid price for item: ${item.description}`);
+             itemsProcessed++; // Still count as processed for completion check
+             return; // Skip db.run for this invalid item
+        }
+        db.run(lineItemSql, [quoteId, item.description, price], function (err) {
+            itemsProcessed++;
+            if (err) { lineItemInsertError = err; console.error("SQLite Line Item Insert Error:", err.message); }
+            if (itemsProcessed === itemsToProcess) { // Check if all attempted
+                if (lineItemInsertError) { db.run('ROLLBACK'); return res.status(500).json({ error: "Failed to insert one or more line items.", details: lineItemInsertError.message }); }
+                handleSecretNotesInsert(res, db, quoteId, secretNotes || []); // Ensure secretNotes is array
+            }
+        });
+    });
+}
+
+// Helper to insert Secret Notes then commit
+function handleSecretNotesInsert(res, db, quoteId, secretNotes) {
+    const notesToProcess = secretNotes.length;
+    if (notesToProcess === 0) { commitTransactionAndRespond(res, db, quoteId); return; }
+
+    const noteSql = 'INSERT INTO SecretNotes (QU_ID, NoteText) VALUES (?, ?)';
+    let noteInsertError = null;
+    let notesProcessed = 0;
+    secretNotes.forEach((note) => {
+        db.run(noteSql, [quoteId, note.noteText || ''], function (err) { // Handle potentially null noteText
+            notesProcessed++;
+            if (err) { noteInsertError = err; console.error("SQLite Secret Note Insert Error:", err.message); }
+            if (notesProcessed === notesToProcess) { // Check if all attempted
+                if (noteInsertError) { db.run('ROLLBACK'); return res.status(500).json({ error: "Failed to insert one or more secret notes.", details: noteInsertError.message }); }
+                commitTransactionAndRespond(res, db, quoteId);
+            }
+        });
+    });
+}
+
+// Helper to commit transaction and respond
+function commitTransactionAndRespond(res, db, finalQuoteId) {
+    console.log(`[${finalQuoteId}] Attempting to send success response...`);
+    db.run('COMMIT;', (commitErr) => {
+        if (commitErr) { db.run('ROLLBACK'); return res.status(500).json({ error: "SQLite Commit Error", details: commitErr.message }); }
+        console.log(`SQLite: Transaction committed for Quote ID: ${finalQuoteId}.`);
+        res.status(201).json({ message: "Quote created successfully (SQLite)", quoteId: finalQuoteId });
+    });
+}
+
+
 // --- 404 Handler (Define AFTER all other routes) ---
 app.use((req, res) => {
     res.status(404).json({ "error": "Endpoint not found" });
 });
+
+
+// --- Start Server AFTER SQLite Database Initialization ---
+initializeSqliteDatabase()
+    .then(() => {
+        app.listen(port, () => {
+            console.log(`Server running on http://localhost:${port}`);
+            console.log("MariaDB Pool and SQLite DB are ready.");
+        });
+    })
+    .catch(err => {
+        console.error("FATAL ERROR: Failed to initialize SQLite database. Server not started.", err);
+        // Attempt to close MariaDB pool if it was created before exiting
+        if (pool) {
+            pool.end().catch(poolErr => console.error("Error closing MariaDB pool during failed startup:", poolErr));
+        }
+        process.exit(1); // Exit if DB init fails
+    });
+
+
 // --- Graceful Shutdown for BOTH Databases ---
 process.on('SIGINT', async () => {
     console.log("SIGINT received. Closing connections...");
