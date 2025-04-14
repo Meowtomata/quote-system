@@ -1,10 +1,12 @@
+import './Buttons.css'
+
 function Buttons(){
     return(
         <>
-        <button className="HFMain">DRAFT</button>
-        <button className="HFFinalize">FINALIZE</button>
-        <button className="HFPurchase">PURCHASE</button>
-        <button className="HFAdmin">ADMINSTRATION</button>
+        <button className="button">DRAFT</button>
+        <button className="button">FINALIZE</button>
+        <button className="button">PURCHASE</button>
+        <button className="button">ADMINISTRATION</button>
         </>
     );
 }
