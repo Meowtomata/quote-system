@@ -137,6 +137,7 @@ function App() {
         setCustomerID={(value) => updateQuoteField('customerID', value)}
         onAddNewQuote={handleAddNewQuoteClick}
         />
+    <QuoteList />
     {showQuoteInterface && (
         <div className="overlay">
             <QuoteInterface

@@ -185,6 +185,22 @@ app.get('/api/sales-associates', (req, res) => {
     });
 });
 
+// GET Sales Associates
+app.get('/api/quotes', (req, res) => {
+    if (!db) return res.status(503).json({"error": "SQLite database not ready"}); // Check SQLite connection
+    db.all("SELECT * FROM quotes", [], (err, rows) => { // Use SQLite 'db'
+         if (err) {
+             console.error("SQLite Error fetching quotes:", err.message);
+             res.status(500).json({"error": "SQLite query failed", "details": err.message});
+             return;
+         }
+         res.json({
+             "message": "success (SQLite)",
+             "data": rows
+         });
+    });
+});
+
 // POST Endpoint for Creating Quotes (Uses SQLite)
 app.post('/api/quotes', (req, res) => {
     const requestId = Date.now(); // Simple unique ID for logging
