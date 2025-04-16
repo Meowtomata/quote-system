@@ -53,6 +53,19 @@ function QuoteEditor({ lineItems = [] }) {
     ));
   };
 
+  const finalizeQuote = () => {
+    const dataToSend = {
+      lineItems,
+      discount: {
+        type: discountType,
+        value: discountValue,
+      },
+      totalBeforeDiscount,
+      totalAfterDiscount: finalTotal,
+      notes: notes.map(note => note.text)
+    };
+  };
+
   // ===== RETURN UI =====
   return (
     <>
@@ -62,7 +75,7 @@ function QuoteEditor({ lineItems = [] }) {
           <textarea
             rows="3"
             value={newNote}
-            placeholder="ADD A NOTE..."
+            placeholder="ADD A NOTE:"
             onChange={(e) => setNewNote(e.target.value)}
           />
           <br />
@@ -104,6 +117,11 @@ function QuoteEditor({ lineItems = [] }) {
       <button onClick={calculateDiscount}>APPLY DISCOUNT</button>
       <p>TOTAL BEFORE DISCOUNT: ${totalBeforeDiscount.toFixed(2)}</p>
       <p>TOTAL AFTER DISCOUNT: ${finalTotal.toFixed(2)}</p>
+
+      < hr />
+      <button onClick={finalizeQuote} style={{marginTop: '1rem', padding: '0.5rem 1 rem'}}>
+        FINALIZE QUOTE
+      </button>
     </>
   );
 }

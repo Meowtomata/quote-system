@@ -12,7 +12,6 @@ function App() {
     <Header />
     <Buttons />
     <LandingA />
-    <LandingB />
     <CopyRight />
     </>
   );
