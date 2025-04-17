@@ -205,8 +205,19 @@ function App() {
     <div className="App-container">
     <Header />
     <Buttons setViewState={setViewState} />
-      {viewState === "draft" && <div className="overlay">
-            <QuoteInterface
+      {viewState === "draft" && 
+          <div>
+          <CustomerSelector 
+              customers={customers} 
+              selectedID={quoteInfo.customerID}
+              setCustomerID={(value) => updateQuoteField('customerID', value)}
+              onAddNewQuote={handleAddNewQuoteClick}
+              />
+
+          <QuoteList />
+          </div>
+        }
+      {showQuoteInterface && <div className="overlay">   <QuoteInterface
                 // Pass the data object
                 quoteInfo={quoteInfo}
                 // Pass the specific update functions
@@ -226,13 +237,7 @@ function App() {
         mode={selectedQuote?.mode}/>
       )}
       {viewState === "admin" && <AdminDashboard />}
-    <CustomerSelector 
-        customers={customers} 
-        selectedID={quoteInfo.customerID}
-        setCustomerID={(value) => updateQuoteField('customerID', value)}
-        onAddNewQuote={handleAddNewQuoteClick}
-        />
-    <QuoteList />
+
     <CopyRight />
     <button onClick={handleCreateAssociate}>Test Button for Sales Associate</button>
     </div>
