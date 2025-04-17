@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function QuoteEditor({ lineItems = [] }) {
+function QuoteEditor({ lineItems = [], isFinalizeMode = false, mode = "sanction" }) {
   // ===== DISCOUNT STATE =====
   const [discountType, setDiscountType] = useState('percentage');
   const [discountValue, setDiscountValue] = useState('');
@@ -119,9 +119,17 @@ function QuoteEditor({ lineItems = [] }) {
       <p>TOTAL AFTER DISCOUNT: ${finalTotal.toFixed(2)}</p>
 
       < hr />
-      <button onClick={finalizeQuote} style={{marginTop: '1rem', padding: '0.5rem 1 rem'}}>
-        FINALIZE QUOTE
-      </button>
+      <button
+  onClick={finalizeQuote}
+  style={{ marginTop: "1rem", padding: "0.5rem 1rem" }}
+>
+  {mode === "sanction"
+    ? "SANCTION QUOTE"
+    : mode === "process"
+    ? "PROCESS ORDER"
+    : "FINALIZE QUOTE"}
+</button>
+
     </>
   );
 }
