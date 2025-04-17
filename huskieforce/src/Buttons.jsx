@@ -9,4 +9,3 @@ function Buttons({ setViewState }) {
   }
   
   export default Buttons;
-  
