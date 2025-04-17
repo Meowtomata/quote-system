@@ -7,7 +7,8 @@ import QuoteInterface from "./QuoteInterface.jsx";
 import QuoteList from "./QuoteList.jsx";
 import CustomerSelector from './CustomerSelector.jsx';
 import './App.css'
-
+import FinalizeLanding from "./FinalizeLanding.jsx";
+import AdminDashboard from "./AdminDashboard.jsx";
 
 function App() {
   // customer array will be retrieved from legacy database
@@ -16,6 +17,15 @@ function App() {
   const [isLoading, setIsLoading] = useState(false); // State to track loading
   const [error, setError] = useState(null);          // State to track errors
 
+  // Bleon's changes to App.jsx
+  const [viewState, setViewState] = useState("");
+  const [selectedQuote, setSelectedQuote] = useState(null);
+  
+  const handleEditQuote = (quote, mode ="sanction") => {
+    setSelectedQuote({...quote, mode});
+    setViewState("edit-finalize");
+  };
+  // ============
 
     // Generic updater for simple fields like email, discountAmount, isPercentage
     const updateQuoteField = useCallback((fieldName, value) => {
@@ -194,16 +204,8 @@ function App() {
   return(
     <div className="App-container">
     <Header />
-    <Buttons />
-    <CustomerSelector 
-        customers={customers} 
-        selectedID={quoteInfo.customerID}
-        setCustomerID={(value) => updateQuoteField('customerID', value)}
-        onAddNewQuote={handleAddNewQuoteClick}
-        />
-    <QuoteList />
-    {showQuoteInterface && (
-        <div className="overlay">
+    <Buttons setViewState={setViewState} />
+      {viewState === "draft" && <div className="overlay">
             <QuoteInterface
                 // Pass the data object
                 quoteInfo={quoteInfo}
@@ -215,8 +217,22 @@ function App() {
                 setShowQuoteInterface={setShowQuoteInterface}
                 isLoading={isLoading}
             />
-        </div>
-    )}
+        </div>}
+      {viewState === "finalize" && (
+        <FinalizeLanding onEditQuote={handleEditQuote} />
+      )}
+      {viewState === "edit-finalize" && (
+        <LandingA quote={selectedQuote} isFinalizeMode 
+        mode={selectedQuote?.mode}/>
+      )}
+      {viewState === "admin" && <AdminDashboard />}
+    <CustomerSelector 
+        customers={customers} 
+        selectedID={quoteInfo.customerID}
+        setCustomerID={(value) => updateQuoteField('customerID', value)}
+        onAddNewQuote={handleAddNewQuoteClick}
+        />
+    <QuoteList />
     <CopyRight />
     <button onClick={handleCreateAssociate}>Test Button for Sales Associate</button>
     </div>
