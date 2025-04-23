@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS Quotes (
     QU_ID INTEGER PRIMARY KEY AUTOINCREMENT, -- Quote ID
     SA_ID INTEGER,             -- Sales Associate ID
     CU_ID INTEGER,             -- Customer ID
-    Status TEXT,
+    Status TEXT DEFAULT "Draft",
     Discount_Amount REAL,
     isPercentage INT,
     Created_Date DATE DEFAULT CURRENT_TIMESTAMP,

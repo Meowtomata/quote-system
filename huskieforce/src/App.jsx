@@ -8,6 +8,7 @@ import QuoteList from "./QuoteList.jsx";
 import CustomerSelector from './CustomerSelector.jsx';
 import './App.css'
 import AdminDashboard from "./AdminDashboard.jsx";
+import DraftQuotesPage from "./DraftQuotesPage.jsx";
 import SanctionQuotesPage from "./SanctionQuotesPage.jsx";
 import OrderedQuotesPage from "./OrderedQuotesPage.jsx";
 
@@ -26,13 +27,24 @@ function App() {
   // quotes will be passed down and filtered by status
   const [allQuotes, setAllQuotes] = useState([]);
 
+  const fetchQuotes = async () => {
+    console.log("Fetching all quotes...");
+    setIsLoading(true); // Show loading indicator
+    setError(null);     // Clear previous errors
+    try {
+      const res = await axios.get("http://localhost:3000/api/quotes");
+      setAllQuotes(Array.isArray(res.data.data) ? res.data.data : []);
+    } catch (err) {
+      console.error("Failed to load quotes:", err);
+      setError("Failed to load quotes.");
+      setAllQuotes([]); // Clear on error
+    } finally {
+      setIsLoading(false); // Hide loading indicator
+    }
+  };
 
   useEffect(() => {
-  axios.get("http://localhost:3000/api/quotes")
-    .then(res => {
-      setAllQuotes(res.data.data || []);
-    })
-    .catch(err => console.error("Failed to load ordered quotes:", err));
+    fetchQuotes(); // Call the reusable function on mount
 }, []); // now re-runs when trigger changes
 
   
@@ -176,7 +188,7 @@ function App() {
   };
 
 
-  const handleCreateQuote = async () => {
+  const handleCreateQuote = async (quoteId) => {
     console.log("--- handleCreateQuote Executing ---");
     // Now reads the LATEST quoteInfo state directly from App.jsx
     console.log("QuoteInfo at execution time:", JSON.stringify(quoteInfo));
@@ -203,7 +215,11 @@ function App() {
     try {
       const response = await axios.post('http://localhost:3000/api/quotes', payload);
       // ... success handling ...
-      setShowQuoteInterface(false); 
+      await fetchQuotes(); 
+      console.log("success?");
+
+      setShowQuoteInterface(false); // Close interface on success
+
     } catch (err) {
       // ... error handling ... 
        console.error("Error fetching data:", err);
@@ -245,7 +261,26 @@ function App() {
       console.error("❌ Error updating quote:", err);
     }
   };
+
+  const handleFinalizeQuote = async (quoteId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newStatus: "Sanctioned" })
+      });
+
   
+      if (!response.ok) throw new Error("Failed to update status");
+  
+      console.log(`✅ Quote ${quoteId} updated to SANCTIONED`);
+  
+      await fetchQuotes();
+  
+    } catch (error) {
+      console.error("❌ Error updating quote to ordered:", error);
+    }
+  }; 
   
   
 
@@ -262,8 +297,7 @@ function App() {
   
       console.log(`✅ Quote ${quoteId} updated to ORDERED`);
   
-      // 🧼 Clean up quote list from OrderedQuotesPage state
-      setAllQuotes(prev => prev.filter(q => q.QU_ID !== quoteId));
+      await fetchQuotes();
   
     } catch (error) {
       console.error("❌ Error updating quote to ordered:", error);
@@ -275,7 +309,7 @@ function App() {
       const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newStatus: "Sanctioned" }) // or "Sanctioned"
+        body: JSON.stringify({ newStatus: "Ordered" }) // or "Sanctioned"
       });
   
       if (!response.ok) {
@@ -286,7 +320,7 @@ function App() {
       console.log("Quote status updated successfully!");
   
       // ⬇️ Remove sanctioned quote from local list (UI update)
-      setAllQuotes((prevQuotes) => prevQuotes.filter(q => q.QU_ID !== quoteId));
+      await fetchQuotes();
   
     } catch (error) {
       console.error("Error sanctioning quote:", error);
@@ -332,6 +366,11 @@ function App() {
     }
   };
 
+  // *** Filter specifically for quotes THAT ARE drafts ***
+  const draftedQuotes = allQuotes.filter(q =>
+    q.Status && q.Status.toLowerCase() === "draft" 
+  );
+
   // Filter for quotes TO BE ordered (Status = "Sanctioned")
   const sanctionedQuotes = allQuotes.filter(q =>
     q.Status && q.Status.toLowerCase() === "sanctioned"
@@ -339,7 +378,7 @@ function App() {
 
   // *** Filter specifically for quotes THAT ARE Ordered ***
   const orderedQuotes = allQuotes.filter(q =>
-    q.Status && q.Status.toLowerCase() === "ordered" // <-- Filter by "ordered"
+    q.Status && q.Status.toLowerCase() === "ordered" 
   );
 
   return(
@@ -354,6 +393,11 @@ function App() {
               setCustomerID={(value) => updateQuoteField('customerID', value)}
               onAddNewQuote={handleAddNewQuoteClick}
               />
+          <DraftQuotesPage 
+            onEditQuote={handleEditQuote}
+            onFinalizeQuote={handleFinalizeQuote}
+            draftQuotes={draftedQuotes}
+          />
           </div>
         }
       {showQuoteInterface && <div className="overlay">   <QuoteInterface
