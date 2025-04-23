@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
 
+useEffect(() => {
+  fetch("http://localhost:3000/api/quotes")
+    .then(res => res.json())
+    .then(data => {
+      const orderedQuotes = data.data.filter(q => q.Status === "Ordered");
+      setQuotes(orderedQuotes);
+    })
+    .catch(console.error);
+}, []);
+
 function QuoteEditor({ lineItems = [], isFinalizeMode = false, mode = "sanction" }) {
   // ===== DISCOUNT STATE =====
   const [discountType, setDiscountType] = useState('percentage');

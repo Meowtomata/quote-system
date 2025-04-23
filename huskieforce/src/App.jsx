@@ -7,8 +7,9 @@ import QuoteInterface from "./QuoteInterface.jsx";
 import QuoteList from "./QuoteList.jsx";
 import CustomerSelector from './CustomerSelector.jsx';
 import './App.css'
-import FinalizeLanding from "./FinalizeLanding.jsx";
 import AdminDashboard from "./AdminDashboard.jsx";
+import SanctionQuotesPage from "./SanctionQuotesPage.jsx";
+import OrderedQuotesPage from "./OrderedQuotesPage.jsx";
 
 function App() {
   // customer array will be retrieved from legacy database
@@ -16,15 +17,41 @@ function App() {
   const [salesAssociates, setSalesAssociates] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // State to track loading
   const [error, setError] = useState(null);          // State to track errors
+  const [previousView, setPreviousView] = useState("sanction"); // Default to sanction
+  const [orderedQuotes, setOrderedQuotes] = useState([]);
+
 
   // Bleon's changes to App.jsx
   const [viewState, setViewState] = useState("");
   const [selectedQuote, setSelectedQuote] = useState(null);
   
-  const handleEditQuote = (quote, mode ="sanction") => {
-    setSelectedQuote({...quote, mode});
-    setViewState("edit-finalize");
+  const handleEditQuote = async (quote, origin = "sanction") => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
+      const { quote: base, lineItems, secretNotes } = response.data;
+  
+      const mappedQuote = {
+        QU_ID: quote.QU_ID,
+        customerID: base.CU_ID,
+        email: base.email || '',
+        lineItems: lineItems.map(li => ({
+          id: li.LI_ID || Date.now(),
+          description: li.Description,
+          price: li.Price
+        })),
+        secretNotes: secretNotes.map(sn => ({ text: sn.NoteText, id: sn.Note_ID })),
+        discountAmount: parseFloat(base.Discount_Amount) || 0,
+        isPercentage: !!base.isPercentage
+      };
+  
+      setQuoteInfo(mappedQuote);
+      setPreviousView(origin); // save where we came from
+      setViewState("edit-finalize");
+    } catch (err) {
+      console.error("Failed to fetch full quote data:", err);
+    }
   };
+
   // ============
 
     // Generic updater for simple fields like email, discountAmount, isPercentage
@@ -164,6 +191,47 @@ function App() {
     }
   };
 
+  const handleUpdateQuote = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/quotes/${quoteInfo.QU_ID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(quoteInfo),
+      });
+  
+      if (!response.ok) throw new Error("Failed to update quote");
+  
+      console.log("✅ Quote updated!");
+      setShowQuoteInterface(false); // close draft editor
+    } catch (err) {
+      console.error("❌ Error updating quote:", err);
+    }
+  };
+  
+  
+
+  const handleOrderQuote = async (quoteId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newStatus: "Ordered" })
+      });
+  
+      if (!response.ok) throw new Error("Failed to update status");
+  
+      console.log(`✅ Quote ${quoteId} updated to ORDERED`);
+  
+      // 🧼 Clean up quote list from OrderedQuotesPage state
+      setOrderedQuotes(prev => prev.filter(q => q.QU_ID !== quoteId));
+  
+    } catch (error) {
+      console.error("❌ Error updating quote to ordered:", error);
+    }
+  };
+  
+  
+
   const handleCreateAssociate = async () => {
     console.log("--- handleCreateAssociate Executing ---");
     const payload = {
@@ -213,8 +281,6 @@ function App() {
               setCustomerID={(value) => updateQuoteField('customerID', value)}
               onAddNewQuote={handleAddNewQuoteClick}
               />
-
-          <QuoteList />
           </div>
         }
       {showQuoteInterface && <div className="overlay">   <QuoteInterface
@@ -232,11 +298,42 @@ function App() {
       {viewState === "finalize" && (
         <FinalizeLanding onEditQuote={handleEditQuote} />
       )}
-      {viewState === "edit-finalize" && (
-        <LandingA quote={selectedQuote} isFinalizeMode 
-        mode={selectedQuote?.mode}/>
-      )}
-      {viewState === "admin" && <AdminDashboard />}
+      {viewState === "sanction" && (
+  <SanctionQuotesPage onEditQuote={handleEditQuote} />
+)}
+
+{viewState === "edit-finalize" && (
+  <div className="overlay">
+    <QuoteInterface
+  quoteInfo={quoteInfo}
+  updateQuoteField={updateQuoteField}
+  updateLineItems={updateLineItems}
+  updateSecretNotes={updateSecretNotes}
+  handleCreateQuote={handleCreateQuote}
+  handleUpdateQuote={handleUpdateQuote}
+  isEditing={true}
+  setShowQuoteInterface={(show) => {
+    if (!show) setViewState(previousView);
+  }}
+  isLoading={isLoading}
+/>
+  </div>
+)}
+
+
+{viewState === "ordered" && (
+  <OrderedQuotesPage
+    onEditQuote={handleEditQuote}
+    onOrderQuote={handleOrderQuote} // ✅ This is required
+    orderedQuotes={orderedQuotes}
+    setOrderedQuotes={setOrderedQuotes}
+  />
+)}
+
+
+
+
+   {viewState === "admin" && <AdminDashboard />}
 
     <CopyRight />
     <button onClick={handleCreateAssociate}>Test Button for Sales Associate</button>

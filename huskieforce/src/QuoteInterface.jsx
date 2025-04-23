@@ -4,14 +4,21 @@ import FormSecretNote from './FormSecretNote.jsx';
 import FormDiscount from './FormDiscount.jsx'
 
 function QuoteInterface({
-  quoteInfo, 
-  updateQuoteField, // Generic updater for simple fields
-  updateLineItems, // Specific updater for line items
-  updateSecretNotes, // Specific updater for secret notes
+  quoteInfo,
+  updateQuoteField,
+  updateLineItems,
+  updateSecretNotes,
   handleCreateQuote,
+  handleUpdateQuote,
+  isEditing,
   setShowQuoteInterface,
   isLoading
 }) {
+
+  
+  
+  const isEditMode = !!quoteInfo?.QU_ID; // if quote has a QU_ID, assume edit mode
+
   const handleSubmitClick = (event) => {
     console.log(quoteInfo.email);
     console.log(quoteInfo.lineItems); 
@@ -28,7 +35,7 @@ function QuoteInterface({
 
   return (
     <div>
-      <h2>Quote Interface</h2>
+      <h2>Quote</h2>
       <h3>Email</h3>
         <textarea
             value={quoteInfo.email} // Read from prop
@@ -49,10 +56,16 @@ function QuoteInterface({
         setIsPercentage={(value) => updateQuoteField('isPercentage', value)}
       />
 
-      <button className='button' onClick={handleSubmitClick} disabled={isLoading}>
-          {isLoading ? 'Submitting...' : 'Submit Quote'}
-      </button>
-      <button className='button' onClick={handleCloseClick}>Close Quote Interface</button>
+<div button className="button-group">
+<button 
+className="Save"
+  onClick={isEditing ? handleUpdateQuote : handleCreateQuote}
+  disabled={isLoading}
+>
+  {isEditing ? "SAVE" : "SUBMIT"}
+</button>
+      <button className="Close" onClick={handleCloseClick}>CLOSE</button>
+    </div>
     </div>
   );
 }

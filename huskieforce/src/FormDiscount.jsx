@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'; // Import useEffect
 
 // Assuming props like lineItems, discountValue, setDiscountValue are passed in
-function FormDiscount({ lineItems, 
+function FormDiscount({ lineItems = [], 
     discountValue, setDiscountValue,
     isPercentage, setIsPercentage }) {
 

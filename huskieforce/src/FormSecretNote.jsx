@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 
-function FormSecretNote({secretNotes, setSecretNotes}) {
+function FormSecretNote({ secretNotes = [], setSecretNotes }) {
   // ===== NOTES STATE =====
   const [newNote, setNewNote] = useState('');
 
   const addNote = () => {
     if (newNote.trim() !== '') {
-      setSecretNotes([...secretNotes, { text: newNote, editing: false }]);
+      setSecretNotes([
+        ...secretNotes,
+        { id: Date.now(), text: newNote, editing: false } // ⬅️ assigning ID here
+      ]);
       setNewNote('');
     }
   };
+  
 
   const deleteNote = (id) => {
     setSecretNotes(secretNotes.filter(note => note.id !== id));
@@ -40,12 +44,14 @@ function FormSecretNote({secretNotes, setSecretNotes}) {
             onChange={(e) => setNewNote(e.target.value)}
           />
           <br />
-          <button onClick={addNote}>ADD NOTE</button>
+          <div className="button-groupV3">
+          <button className="NoteButton" onClick={addNote}>ADD</button>
+          </div>
         </div>
 
         <div className="notes">
-          {secretNotes.map((note) => (
-            <div key={note.id} className="note">
+        {secretNotes.map((note, index) => (
+        <div key={note.id || note.text + index} className="note">
               {note.editing ? (
                 <textarea
                   rows="3"
@@ -55,10 +61,12 @@ function FormSecretNote({secretNotes, setSecretNotes}) {
               ) : (
                 <p>{note.text}</p>
               )}
-              <button onClick={() => toggleEditNote(note.id)}>
+              <div className="button-groupV3"> 
+              <button className="NoteSE" onClick={() => toggleEditNote(note.id)}>
                 {note.editing ? 'SAVE' : 'EDIT'}
               </button>
-              <button onClick={() => deleteNote(note.id)}>DELETE</button>
+              <button className="NoteD" onClick={() => deleteNote(note.id)}>DELETE</button>
+            </div>
             </div>
           ))}
         </div>

@@ -1,7 +1,6 @@
 /* App.css */
 .App-container {
   position: relative; /* Allow for overlay */
-
 }
 /* OverlayComponent.css */
 .overlay {
@@ -19,12 +18,13 @@
   /* --- */
 
   /* Visual styling */
-  background-color: rgba(0, 0, 255, 1); /* Semi-transparent blue */
+  background-color: #3c3c3c; /* Semi-transparent blue */
   color: white;
   padding: 25px;
-  border: 1px solid darkblue;
+  border: 1px solid white;
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  justify-content: center;
 }
 
 /* Optional: Style for the close button */
@@ -76,23 +76,6 @@ input {
 .Quote {
   padding: 10px;
   border-radius: 1px;
-}
-
-.cusAssoc {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-  gap: 20px;
-
-  border-radius: 1px;
-  text-align: left;
-  border: 1px solid #d9d9d9;
-  border-radius: 0px;
-
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
 }
 
 .cusInfo {
@@ -357,7 +340,6 @@ select {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -369,4 +351,144 @@ select {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.huskieforceLogo {
+  padding: 10px;
+  border-radius: 1px;
+  text-align: center;
+  justify-content: space-evenly;
+}
+footer {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: #ffffff;
+  font-weight: bold;
+}
+.button-group {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.HFMain,
+.HFFinalize,
+.HFAdmin,
+.ANQuote,
+.LIButton,
+.LIDelete,
+.LIAdd,
+.NoteButton,
+.NoteSE,
+.NoteD,
+.HFOrdered,
+.HFSanction,
+.Save,
+.Close,
+.Edit,
+.Sanction,
+.Order {
+  padding: 10px 20px;
+  border-radius: 5px;
+  background-color: #282828;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  border-color: #282828;
+}
+
+.HFMain:hover,
+.HFFinalize:hover,
+.HFAdmin:hover,
+.ANQuote:hover,
+.LIButton:hover,
+.LIDelete:hover,
+.LIAdd:hover,
+.NoteButton:hover,
+.NoteSE:hover,
+.NoteD:hover,
+.HFOrdered:hover,
+.HFSanction:hover,
+.Save:hover,
+.Close:hover,
+.Edit:hover,
+.Sanction:hover,
+.Order:hover {
+  background-color: #c12f2f;
+}
+
+.button-groupV2 {
+  display: flex;
+  justify-content: right;
+  text-align: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.button-groupV3 {
+  display: flex;
+  justify-content: left;
+  text-align: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.customer-container {
+  border: 2px solid white;
+  padding: 15px;
+  border-radius: 1px;
+  max-width: 500px;
+  margin: 20px auto;
+  text-align: center;
+  background-color: #2a2a2a;
+  color: white;
+}
+
+.quote-list-container {
+  border: 2px solid white;
+  padding: 15px;
+  border-radius: 1px;
+  max-width: 1000px;
+  margin: 20px auto;
+  background-color: #2a2a2a;
+  color: white;
+  overflow-x: auto;
+  text-align: center;
+  text-align: center;
+}
+
+.quote-list-container table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  color: white;
+}
+
+.quote-list-container th,
+.quote-list-container td {
+  padding: 10px 12px;
+  border: #ccc;
+  text-align: left;
+  white-space: nowrap;
+  border: 1px solid white;
+}
+
+select {
+  background-color: #1f1f1f; /* dark background */
+  color: white; /* white text */
+  padding: 8px;
+  border: 1px solid white;
+  border-radius: 1px;
+  font-size: 16px;
+}
+
+select option {
+  background-color: #2c2c2c;
+  color: white;
 }

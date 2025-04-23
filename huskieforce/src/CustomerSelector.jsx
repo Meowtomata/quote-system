@@ -17,8 +17,7 @@ function CustomerSelector({ customers, selectedID, setCustomerID, onAddNewQuote 
   };
 
   return (
-    <div>
-      <div style={containerStyle}>
+      <div className="customer-container">
         <label htmlFor="customer-select" style={{ marginRight: '5px' }}>Customer:</label>
         <select
           id="customer-select"
@@ -26,21 +25,16 @@ function CustomerSelector({ customers, selectedID, setCustomerID, onAddNewQuote 
           onChange={handleSelectChange}
           style={{ minWidth: '150px', padding: '5px' }}
         >
-          <option value="" disabled>-- Select a Customer --</option>
+          <option value="" disabled>-- SELECT A CUSTOMER --</option>
           {customers.map((customer) => (
             <option key={customer.id} value={customer.id}>
               {customer.name} 
             </option>
           ))}
         </select>
+        <button className="ANQuote" onClick={onAddNewQuote}>ADD NEW QUOTE</button>
 
-        <button
-          onClick={onAddNewQuote}>
-          Add New Quote
-        </button>
-      </div>
-
-      <p>Total Customers: {customers.length}</p>
+      <p>TOTAL CUSTOMERS: {customers.length}</p>
     </div>
   );
 }
