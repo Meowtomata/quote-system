@@ -1,21 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const OrderedQuotesPage = ({ onEditQuote, onOrderQuote, orderedQuotes, setOrderedQuotes }) => {
-  const [quotes, setQuotes] = useState([]);
+const OrderedQuotesPage = ({ onEditQuote, onOrderQuote, orderedQuotes }) => {
 
-
-  useEffect(() => {
-  axios.get("http://localhost:3000/api/quotes")
-    .then(res => {
-      const quoteArray = res.data.data || [];
-      const sanctionedQuotes = quoteArray.filter(q => 
-        q.Status && q.Status.toLowerCase() === "sanctioned"
-      );
-      setQuotes(sanctionedQuotes);
-    })
-    .catch(err => console.error("Failed to load ordered quotes:", err));
-}, []); // now re-runs when trigger changes
 
 
   return (
@@ -34,7 +21,7 @@ const OrderedQuotesPage = ({ onEditQuote, onOrderQuote, orderedQuotes, setOrdere
           </tr>
         </thead>
         <tbody>
-          {quotes.map(quote => (
+          {orderedQuotes.map(quote => (
             <tr key={quote.QU_ID}>
               <td>{quote.QU_ID}</td>
               <td>{quote.CU_ID}</td>

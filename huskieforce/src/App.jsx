@@ -18,12 +18,23 @@ function App() {
   const [isLoading, setIsLoading] = useState(false); // State to track loading
   const [error, setError] = useState(null);          // State to track errors
   const [previousView, setPreviousView] = useState("sanction"); // Default to sanction
-  const [orderedQuotes, setOrderedQuotes] = useState([]);
-
 
   // Bleon's changes to App.jsx
   const [viewState, setViewState] = useState("");
   const [selectedQuote, setSelectedQuote] = useState(null);
+
+  // quotes will be passed down and filtered by status
+  const [allQuotes, setAllQuotes] = useState([]);
+
+
+  useEffect(() => {
+  axios.get("http://localhost:3000/api/quotes")
+    .then(res => {
+      setAllQuotes(res.data.data || []);
+    })
+    .catch(err => console.error("Failed to load ordered quotes:", err));
+}, []); // now re-runs when trigger changes
+
   
   const handleEditQuote = async (quote, origin = "sanction") => {
     try {
@@ -245,16 +256,40 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ newStatus: "Ordered" })
       });
+
   
       if (!response.ok) throw new Error("Failed to update status");
   
       console.log(`✅ Quote ${quoteId} updated to ORDERED`);
   
       // 🧼 Clean up quote list from OrderedQuotesPage state
-      setOrderedQuotes(prev => prev.filter(q => q.QU_ID !== quoteId));
+      setAllQuotes(prev => prev.filter(q => q.QU_ID !== quoteId));
   
     } catch (error) {
       console.error("❌ Error updating quote to ordered:", error);
+    }
+  };
+  
+  const handleSanctionQuote = async (quoteId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newStatus: "Sanctioned" }) // or "Sanctioned"
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update status");
+      }
+  
+      // Optionally show confirmation
+      console.log("Quote status updated successfully!");
+  
+      // ⬇️ Remove sanctioned quote from local list (UI update)
+      setAllQuotes((prevQuotes) => prevQuotes.filter(q => q.QU_ID !== quoteId));
+  
+    } catch (error) {
+      console.error("Error sanctioning quote:", error);
     }
   };
   
@@ -297,6 +332,16 @@ function App() {
     }
   };
 
+  // Filter for quotes TO BE ordered (Status = "Sanctioned")
+  const sanctionedQuotes = allQuotes.filter(q =>
+    q.Status && q.Status.toLowerCase() === "sanctioned"
+  );
+
+  // *** Filter specifically for quotes THAT ARE Ordered ***
+  const orderedQuotes = allQuotes.filter(q =>
+    q.Status && q.Status.toLowerCase() === "ordered" // <-- Filter by "ordered"
+  );
+
   return(
     <div className="App-container">
     <Header />
@@ -327,7 +372,11 @@ function App() {
         <FinalizeLanding onEditQuote={handleEditQuote} />
       )}
       {viewState === "sanction" && (
-  <SanctionQuotesPage onEditQuote={handleEditQuote} />
+  <SanctionQuotesPage 
+          onEditQuote={handleEditQuote} 
+          onSanctionQuote={handleSanctionQuote}
+          sanctionedQuotes={sanctionedQuotes}
+        />
 )}
 
 {viewState === "edit-finalize" && (
@@ -354,13 +403,8 @@ function App() {
     onEditQuote={handleEditQuote}
     onOrderQuote={handleOrderQuote} // ✅ This is required
     orderedQuotes={orderedQuotes}
-    setOrderedQuotes={setOrderedQuotes}
   />
 )}
-
-
-
-
    {viewState === "admin" && <AdminDashboard />}
 
     <CopyRight />
