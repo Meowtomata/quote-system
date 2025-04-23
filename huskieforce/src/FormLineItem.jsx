@@ -57,6 +57,7 @@ function FormLineItem({ lineItems = [], setLineItems }) {
         </div>
       </div>
 
+      <div className="quote-field">
       <div className="line-items">
         {lineItems.map((item, index) => (
           <div key={item.id || item.description + item.price + index} className="line-item">
@@ -87,6 +88,7 @@ function FormLineItem({ lineItems = [], setLineItems }) {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }

@@ -32,15 +32,22 @@ function QuoteInterface({
   const handleCloseClick = () => {
     setShowQuoteInterface(false);
   };
+  console.log("Email in quoteInfo:", quoteInfo.email);
 
   return (
     <div>
       <h2>Quote</h2>
       <h3>Email</h3>
-        <textarea
-            value={quoteInfo.email} // Read from prop
-            onChange={(e) => updateQuoteField('email', e.target.value)} // Call updater prop
+      <div className="quote-field">
+        <input
+        id="email"
+        type="email"
+        value={quoteInfo.email}
+        onChange={(e) => updateQuoteField('email', e.target.value)}
+        placeholder="Enter email"
         />
+        </div>
+
       <FormLineItem
         lineItems={quoteInfo.lineItems} 
         setLineItems={updateLineItems} 
@@ -56,7 +63,7 @@ function QuoteInterface({
         setIsPercentage={(value) => updateQuoteField('isPercentage', value)}
       />
 
-<div button className="button-group">
+<div className="button-group">
 <button 
 className="Save"
   onClick={isEditing ? handleUpdateQuote : handleCreateQuote}

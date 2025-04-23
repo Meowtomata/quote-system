@@ -151,6 +151,16 @@ function App() {
   // Handler passed to the button in the child component
   const handleAddNewQuoteClick = () => {
     console.log('Add New Quote button clicked!');
+
+    setQuoteInfo({
+      customerID: 1,
+      email: '',
+      lineItems: [],
+      secretNotes: [],
+      discountAmount: 0,
+      isPercentage: true
+    });
+
     setShowQuoteInterface(true);
   };
 
@@ -166,6 +176,7 @@ function App() {
     // set up information for Quote query
     const payload = {
       customerId: quoteInfo.customerID,
+      email: quoteInfo.email, 
       discountAmount: parseFloat(quoteInfo.discountAmount) || 0,
       isPercentage: quoteInfo.isPercentage,
       lineItems: quoteInfo.lineItems.map(item => ({
@@ -193,20 +204,37 @@ function App() {
 
   const handleUpdateQuote = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/quotes/${quoteInfo.QU_ID}`, {
+      const payload = {
+        quoteId: quoteInfo.QU_ID, // important: backend expects this
+        customerId: quoteInfo.customerID,
+        discountAmount: parseFloat(quoteInfo.discountAmount) || 0,
+        isPercentage: quoteInfo.isPercentage ? 1 : 0, // stored as INT
+        lineItems: quoteInfo.lineItems.map(item => ({
+          LI_ID: item.id, // must match Line_Item.LI_ID
+          Description: item.description,
+          Price: parseFloat(item.price) || 0
+        })),
+        secretNotes: quoteInfo.secretNotes.map(note => ({
+          SN_ID: note.id, // must match SecretNotes.SN_ID
+          NoteText: note.text
+        }))
+      };
+  
+      const response = await fetch(`http://localhost:3000/api/quotes/${payload.quoteId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(quoteInfo),
+        body: JSON.stringify(payload)
       });
   
       if (!response.ok) throw new Error("Failed to update quote");
   
-      console.log("✅ Quote updated!");
-      setShowQuoteInterface(false); // close draft editor
+      console.log("✅ Quote updated successfully!");
+      setShowQuoteInterface(false); // close the modal
     } catch (err) {
       console.error("❌ Error updating quote:", err);
     }
   };
+  
   
   
 

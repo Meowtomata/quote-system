@@ -54,30 +54,33 @@ function FormDiscount({ lineItems = [],
 
 
   return (
-    <> {/* Using Fragment shorthand */}
-      <h3>DISCOUNT</h3>
-      <select
-        // Convert boolean state to string "true" or "false" for the value prop
-        value={isPercentage.toString()}
-        onChange={handleDiscountTypeChange} // Use the updated handler
-      >
-        {/* Use string "true" and "false" for option values */}
-        <option value="true">PERCENTAGE (%)</option>
-        <option value="false">FIXED AMOUNT ($)</option>
-      </select>
-      <input
-        type="number"
-        value={discountValue} // Use the value directly from props or state
-        onChange={(e) => setDiscountValue(e.target.value)} // Use setter from props or state
-        placeholder="ENTER DISCOUNT"
-        min="0" // Good practice to prevent negative input via UI
-      />
-      {/* Button is no longer strictly needed if using useEffect, but can keep for manual trigger if desired */}
-      {/* <button onClick={calculateDiscount}>APPLY DISCOUNT</button> */}
+    <div className="discount-section">
+  <h3>DISCOUNT</h3>
+  
+  <div className="discount-controls">
+    <select
+      value={isPercentage.toString()}
+      onChange={handleDiscountTypeChange}
+    >
+      <option value="true">PERCENTAGE (%)</option>
+      <option value="false">FIXED AMOUNT ($)</option>
+    </select>
 
-      <p>TOTAL BEFORE DISCOUNT: ${totalBeforeDiscount.toFixed(2)}</p>
-      <p>TOTAL AFTER DISCOUNT: ${finalTotal.toFixed(2)}</p>
-    </>
+    <input
+      type="number"
+      value={discountValue}
+      onChange={(e) => setDiscountValue(e.target.value)}
+      placeholder="ENTER DISCOUNT"
+      min="0"
+    />
+  </div>
+
+  <div className="discount-summary">
+    <p>TOTAL BEFORE DISCOUNT: ${totalBeforeDiscount.toFixed(2)}</p>
+    <p>TOTAL AFTER DISCOUNT: ${finalTotal.toFixed(2)}</p>
+  </div>
+</div>
+
   );
 }
 
