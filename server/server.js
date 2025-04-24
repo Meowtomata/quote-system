@@ -339,7 +339,7 @@ app.post("/api/quotes", (req, res) => {
   console.log("POST /api/quotes (SQLite) - Received body:", req.body);
 
   // --- 1. Extract and Validate Data ---
-  const { customerId, discountAmount, isPercentage, lineItems, secretNotes } =
+  const { customerId, email, discountAmount, isPercentage, lineItems, secretNotes } =
     req.body;
   const salesAssociateId = 1; // !! Replace with actual auth logic !!
 
@@ -366,10 +366,11 @@ app.post("/api/quotes", (req, res) => {
           .json({ error: "SQLite TX Begin Error" });
       }
 
-      const quoteSql = `INSERT INTO Quotes (SA_ID, CU_ID, Discount_Amount, isPercentage) VALUES (?, ?, ?, ?)`;
+      const quoteSql = `INSERT INTO Quotes (SA_ID, CU_ID, Email, Discount_Amount, isPercentage) VALUES (?, ?, ?, ?, ?)`;
       const quoteParams = [
         salesAssociateId,
         customerId,
+        email,
         discountAmount,
         isPercentage,
       ];
