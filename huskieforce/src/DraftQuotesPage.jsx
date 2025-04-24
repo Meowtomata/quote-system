@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import QuoteList from './QuoteList';
 
-
-const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, finalizedQuotes }) => {
-
+const DraftQuotesPage = ({ onEditQuote, onFinalizeQuote, draftQuotes }) => {
 
   return (
     <div className="quote-list-container">
-      <h2>Sanction</h2>
+      <h2>Order</h2>
       <table className="quote-table">
         <thead>
           <tr>
@@ -22,23 +18,24 @@ const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, finalizedQuotes }) =
           </tr>
         </thead>
         <tbody>
-          {finalizedQuotes.map(quote => (
+          {draftQuotes.map(quote => (
             <tr key={quote.QU_ID}>
               <td>{quote.QU_ID}</td>
               <td>{quote.CU_ID}</td>
               <td>{quote.SA_ID}</td>
-              <td>{quote.Status || 'Draft'}</td>
+              <td>{quote.Status}</td>
               <td>
-                {quote.Discount_Amount != null ? (
-                  quote.isPercentage
-                  ? `${parseFloat(quote.Discount_Amount).toFixed(2)}%`
-                  : `$${parseFloat(quote.Discount_Amount).toFixed(2)}`) : 'N/A'}
+                {quote.Discount_Amount != null
+                  ? quote.isPercentage
+                    ? `${parseFloat(quote.Discount_Amount).toFixed(2)}%`
+                    : `$${parseFloat(quote.Discount_Amount).toFixed(2)}`
+                  : 'N/A'}
               </td>
               <td>{quote.Created_At ? new Date(quote.Created_At).toLocaleDateString() : 'N/A'}</td>
               <td>
               <div className="button-group">
-              <button className="Edit" onClick={() => onEditQuote(quote, "sanction")}>EDIT</button>
-                <button className="Sanction" onClick={() => onSanctionQuote(quote.QU_ID)}>SANCTION</button>
+              <button className="Edit" onClick={() => onEditQuote(quote, "draft")}>EDIT</button>
+              <button className="Order" onClick={() => onFinalizeQuote(quote.QU_ID)}>Finalize Quote</button>
               </div>
               </td>
             </tr>
@@ -49,4 +46,4 @@ const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, finalizedQuotes }) =
   );
 };
 
-export default SanctionQuotesPage;
+export default DraftQuotesPage;

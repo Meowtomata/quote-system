@@ -8,6 +8,7 @@ import QuoteList from "./QuoteList.jsx";
 import CustomerSelector from './CustomerSelector.jsx';
 import './App.css'
 import AdminDashboard from "./AdminDashboard.jsx";
+import DraftQuotesPage from "./DraftQuotesPage.jsx";
 import SanctionQuotesPage from "./SanctionQuotesPage.jsx";
 import OrderedQuotesPage from "./OrderedQuotesPage.jsx";
 
@@ -18,12 +19,34 @@ function App() {
   const [isLoading, setIsLoading] = useState(false); // State to track loading
   const [error, setError] = useState(null);          // State to track errors
   const [previousView, setPreviousView] = useState("sanction"); // Default to sanction
-  const [orderedQuotes, setOrderedQuotes] = useState([]);
-
 
   // Bleon's changes to App.jsx
   const [viewState, setViewState] = useState("");
   const [selectedQuote, setSelectedQuote] = useState(null);
+
+  // quotes will be passed down and filtered by status
+  const [allQuotes, setAllQuotes] = useState([]);
+
+  const fetchQuotes = async () => {
+    console.log("Fetching all quotes...");
+    setIsLoading(true); // Show loading indicator
+    setError(null);     // Clear previous errors
+    try {
+      const res = await axios.get("http://localhost:3000/api/quotes");
+      setAllQuotes(Array.isArray(res.data.data) ? res.data.data : []);
+    } catch (err) {
+      console.error("Failed to load quotes:", err);
+      setError("Failed to load quotes.");
+      setAllQuotes([]); // Clear on error
+    } finally {
+      setIsLoading(false); // Hide loading indicator
+    }
+  };
+
+  useEffect(() => {
+    fetchQuotes(); // Call the reusable function on mount
+}, []); // now re-runs when trigger changes
+
   
   const handleEditQuote = async (quote, origin = "sanction") => {
     try {
@@ -33,7 +56,7 @@ function App() {
       const mappedQuote = {
         QU_ID: quote.QU_ID,
         customerID: base.CU_ID,
-        email: base.email || '',
+        email: base.Email || '',
         lineItems: lineItems.map(li => ({
           id: li.LI_ID || Date.now(),
           description: li.Description,
@@ -45,8 +68,9 @@ function App() {
       };
   
       setQuoteInfo(mappedQuote);
-      setPreviousView(origin); // save where we came from
-      setViewState("edit-finalize");
+      setIsEditing(true);
+      setShowQuoteInterface(true);
+
     } catch (err) {
       console.error("Failed to fetch full quote data:", err);
     }
@@ -99,6 +123,7 @@ function App() {
 
   // when clicking add new quote, display quote interface
   const [showQuoteInterface, setShowQuoteInterface] = useState(false); 
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchAPI = async () => {
@@ -161,11 +186,12 @@ function App() {
       isPercentage: true
     });
 
+    setIsEditing(false);
     setShowQuoteInterface(true);
   };
 
 
-  const handleCreateQuote = async () => {
+  const handleCreateQuote = async (quoteId) => {
     console.log("--- handleCreateQuote Executing ---");
     // Now reads the LATEST quoteInfo state directly from App.jsx
     console.log("QuoteInfo at execution time:", JSON.stringify(quoteInfo));
@@ -175,6 +201,7 @@ function App() {
     setIsLoading(true);
     // set up information for Quote query
     const payload = {
+      salesAssociateId: quoteInfo.salesAssociateId,
       customerId: quoteInfo.customerID,
       email: quoteInfo.email, 
       discountAmount: parseFloat(quoteInfo.discountAmount) || 0,
@@ -192,7 +219,11 @@ function App() {
     try {
       const response = await axios.post('http://localhost:3000/api/quotes', payload);
       // ... success handling ...
-      setShowQuoteInterface(false); 
+      await fetchQuotes(); 
+      console.log("success?");
+
+      setShowQuoteInterface(false); // Close interface on success
+
     } catch (err) {
       // ... error handling ... 
        console.error("Error fetching data:", err);
@@ -207,18 +238,19 @@ function App() {
       const payload = {
         quoteId: quoteInfo.QU_ID, // important: backend expects this
         customerId: quoteInfo.customerID,
+        email: quoteInfo.email, 
         discountAmount: parseFloat(quoteInfo.discountAmount) || 0,
-        isPercentage: quoteInfo.isPercentage ? 1 : 0, // stored as INT
+        isPercentage: quoteInfo.isPercentage,
         lineItems: quoteInfo.lineItems.map(item => ({
-          LI_ID: item.id, // must match Line_Item.LI_ID
-          Description: item.description,
-          Price: parseFloat(item.price) || 0
+            description: item.description, // Adjust key if needed
+            price: parseFloat(item.price) || 0
         })),
         secretNotes: quoteInfo.secretNotes.map(note => ({
-          SN_ID: note.id, // must match SecretNotes.SN_ID
-          NoteText: note.text
-        }))
+            noteText: note.text // Adjust key if needed
+        })),
       };
+          
+      console.log(JSON.stringify(payload));
   
       const response = await fetch(`http://localhost:3000/api/quotes/${payload.quoteId}`, {
         method: 'PUT',
@@ -228,13 +260,33 @@ function App() {
   
       if (!response.ok) throw new Error("Failed to update quote");
   
+      await fetchQuotes();
       console.log("✅ Quote updated successfully!");
       setShowQuoteInterface(false); // close the modal
     } catch (err) {
       console.error("❌ Error updating quote:", err);
     }
   };
+
+  const handleFinalizeQuote = async (quoteId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newStatus: "Finalized" })
+      });
+
   
+      if (!response.ok) throw new Error("Failed to update status");
+  
+      console.log(`✅ Quote ${quoteId} updated to Finalized`);
+  
+      await fetchQuotes();
+  
+    } catch (error) {
+      console.error("❌ Error updating quote to ordered:", error);
+    }
+  }; 
   
   
 
@@ -245,16 +297,39 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ newStatus: "Ordered" })
       });
+
   
       if (!response.ok) throw new Error("Failed to update status");
   
       console.log(`✅ Quote ${quoteId} updated to ORDERED`);
   
-      // 🧼 Clean up quote list from OrderedQuotesPage state
-      setOrderedQuotes(prev => prev.filter(q => q.QU_ID !== quoteId));
+      await fetchQuotes();
   
     } catch (error) {
       console.error("❌ Error updating quote to ordered:", error);
+    }
+  };
+  
+  const handleSanctionQuote = async (quoteId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newStatus: "Sanctioned" }) // or "Sanctioned"
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update status");
+      }
+  
+      // Optionally show confirmation
+      console.log("Quote status updated successfully!");
+  
+      // ⬇️ Remove sanctioned quote from local list (UI update)
+      await fetchQuotes();
+  
+    } catch (error) {
+      console.error("Error sanctioning quote:", error);
     }
   };
   
@@ -297,6 +372,21 @@ function App() {
     }
   };
 
+  // *** Filter specifically for quotes THAT ARE drafts ***
+  const draftedQuotes = allQuotes.filter(q =>
+    q.Status && q.Status.toLowerCase() === "draft" 
+  );
+
+  // Filter for quotes TO BE ordered (Status = "Sanctioned")
+  const finalizedQuotes = allQuotes.filter(q =>
+    q.Status && q.Status.toLowerCase() === "finalized"
+  );
+
+  // *** Filter specifically for quotes THAT ARE Ordered ***
+  const sanctionedQuotes = allQuotes.filter(q =>
+    q.Status && q.Status.toLowerCase() === "sanctioned" 
+  );
+
   return(
     <div className="App-container">
     <Header />
@@ -309,6 +399,11 @@ function App() {
               setCustomerID={(value) => updateQuoteField('customerID', value)}
               onAddNewQuote={handleAddNewQuoteClick}
               />
+          <DraftQuotesPage 
+            onEditQuote={handleEditQuote}
+            onFinalizeQuote={handleFinalizeQuote}
+            draftQuotes={draftedQuotes}
+          />
           </div>
         }
       {showQuoteInterface && <div className="overlay">   <QuoteInterface
@@ -320,17 +415,19 @@ function App() {
                 updateSecretNotes={updateSecretNotes}
                 handleCreateQuote={handleCreateQuote}
                 setShowQuoteInterface={setShowQuoteInterface}
+                isEditing={isEditing}
                 isLoading={isLoading}
             />
         </div>}
-      {viewState === "finalize" && (
-        <FinalizeLanding onEditQuote={handleEditQuote} />
-      )}
       {viewState === "sanction" && (
-  <SanctionQuotesPage onEditQuote={handleEditQuote} />
+  <SanctionQuotesPage 
+          onEditQuote={handleEditQuote} 
+          onSanctionQuote={handleSanctionQuote}
+          finalizedQuotes={finalizedQuotes}
+        />
 )}
 
-{viewState === "edit-finalize" && (
+{showQuoteInterface && (
   <div className="overlay">
     <QuoteInterface
   quoteInfo={quoteInfo}
@@ -339,28 +436,21 @@ function App() {
   updateSecretNotes={updateSecretNotes}
   handleCreateQuote={handleCreateQuote}
   handleUpdateQuote={handleUpdateQuote}
-  isEditing={true}
-  setShowQuoteInterface={(show) => {
-    if (!show) setViewState(previousView);
-  }}
+  isEditing={isEditing}
+  setShowQuoteInterface={setShowQuoteInterface}
   isLoading={isLoading}
 />
   </div>
 )}
 
 
-{viewState === "ordered" && (
+{viewState === "order" && (
   <OrderedQuotesPage
     onEditQuote={handleEditQuote}
     onOrderQuote={handleOrderQuote} // ✅ This is required
-    orderedQuotes={orderedQuotes}
-    setOrderedQuotes={setOrderedQuotes}
+    sanctionedQuotes={sanctionedQuotes}
   />
 )}
-
-
-
-
    {viewState === "admin" && <AdminDashboard />}
 
     <CopyRight />
