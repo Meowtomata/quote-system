@@ -267,13 +267,13 @@ function App() {
       const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newStatus: "Sanctioned" })
+        body: JSON.stringify({ newStatus: "Finalized" })
       });
 
   
       if (!response.ok) throw new Error("Failed to update status");
   
-      console.log(`✅ Quote ${quoteId} updated to SANCTIONED`);
+      console.log(`✅ Quote ${quoteId} updated to Finalized`);
   
       await fetchQuotes();
   
@@ -309,7 +309,7 @@ function App() {
       const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newStatus: "Ordered" }) // or "Sanctioned"
+        body: JSON.stringify({ newStatus: "Sanctioned" }) // or "Sanctioned"
       });
   
       if (!response.ok) {
@@ -372,13 +372,13 @@ function App() {
   );
 
   // Filter for quotes TO BE ordered (Status = "Sanctioned")
-  const sanctionedQuotes = allQuotes.filter(q =>
-    q.Status && q.Status.toLowerCase() === "sanctioned"
+  const finalizedQuotes = allQuotes.filter(q =>
+    q.Status && q.Status.toLowerCase() === "finalized"
   );
 
   // *** Filter specifically for quotes THAT ARE Ordered ***
-  const orderedQuotes = allQuotes.filter(q =>
-    q.Status && q.Status.toLowerCase() === "ordered" 
+  const sanctionedQuotes = allQuotes.filter(q =>
+    q.Status && q.Status.toLowerCase() === "sanctioned" 
   );
 
   return(
@@ -412,14 +412,11 @@ function App() {
                 isLoading={isLoading}
             />
         </div>}
-      {viewState === "finalize" && (
-        <FinalizeLanding onEditQuote={handleEditQuote} />
-      )}
       {viewState === "sanction" && (
   <SanctionQuotesPage 
           onEditQuote={handleEditQuote} 
           onSanctionQuote={handleSanctionQuote}
-          sanctionedQuotes={sanctionedQuotes}
+          finalizedQuotes={finalizedQuotes}
         />
 )}
 
@@ -442,11 +439,11 @@ function App() {
 )}
 
 
-{viewState === "ordered" && (
+{viewState === "order" && (
   <OrderedQuotesPage
     onEditQuote={handleEditQuote}
     onOrderQuote={handleOrderQuote} // ✅ This is required
-    orderedQuotes={orderedQuotes}
+    sanctionedQuotes={sanctionedQuotes}
   />
 )}
    {viewState === "admin" && <AdminDashboard />}

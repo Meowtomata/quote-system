@@ -34,7 +34,7 @@ const DraftQuotesPage = ({ onEditQuote, onFinalizeQuote, draftQuotes }) => {
               <td>{quote.Created_At ? new Date(quote.Created_At).toLocaleDateString() : 'N/A'}</td>
               <td>
               <div className="button-group">
-              <button className="Edit" onClick={() => onEditQuote(quote, "ordered")}>EDIT</button>
+              <button className="Edit" onClick={() => onEditQuote(quote, "draft")}>EDIT</button>
               <button className="Order" onClick={() => onFinalizeQuote(quote.QU_ID)}>Finalize Quote</button>
               </div>
               </td>

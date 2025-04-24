@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const OrderedQuotesPage = ({ onEditQuote, onOrderQuote, orderedQuotes }) => {
+const OrderedQuotesPage = ({ onEditQuote, onOrderQuote, sanctionedQuotes }) => {
 
 
 
@@ -21,7 +21,7 @@ const OrderedQuotesPage = ({ onEditQuote, onOrderQuote, orderedQuotes }) => {
           </tr>
         </thead>
         <tbody>
-          {orderedQuotes.map(quote => (
+          {sanctionedQuotes.map(quote => (
             <tr key={quote.QU_ID}>
               <td>{quote.QU_ID}</td>
               <td>{quote.CU_ID}</td>

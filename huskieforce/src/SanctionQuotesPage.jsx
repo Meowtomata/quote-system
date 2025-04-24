@@ -3,7 +3,7 @@ import axios from 'axios';
 import QuoteList from './QuoteList';
 
 
-const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, sanctionedQuotes }) => {
+const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, finalizedQuotes }) => {
 
 
   return (
@@ -22,7 +22,7 @@ const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, sanctionedQuotes }) 
           </tr>
         </thead>
         <tbody>
-          {sanctionedQuotes.map(quote => (
+          {finalizedQuotes.map(quote => (
             <tr key={quote.QU_ID}>
               <td>{quote.QU_ID}</td>
               <td>{quote.CU_ID}</td>

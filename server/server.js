@@ -406,7 +406,7 @@ app.put("/api/quotes/:id/status", (req, res) => {
     return res.status(503).json({ error: "SQLite database not ready" });
   }
 
-  const validStatuses = ["Draft", "Sanctioned", "Ordered"];
+  const validStatuses = ["Draft", "Finalized", "Sanctioned", "Ordered"];
   if (!validStatuses.includes(newStatus)) {
     return res.status(400).json({
       error: `'newStatus' must be one of: ${validStatuses.join(", ")}`,
