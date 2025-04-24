@@ -36,15 +36,15 @@ function QuoteInterface({
 
   return (
     <div>
-      <h2>Quote</h2>
-      <h3>Email</h3>
+      <h2>QUOTE</h2>
+      <h3>EMAIL</h3>
       <div className="quote-field">
         <input
         id="email"
         type="email"
         value={quoteInfo.email}
         onChange={(e) => updateQuoteField('email', e.target.value)}
-        placeholder="Enter email"
+        placeholder="ENTER EMAIL"
         />
         </div>
 
