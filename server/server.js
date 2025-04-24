@@ -437,30 +437,149 @@ app.put("/api/quotes/:id/status", (req, res) => {
   );
 });
 
-// PUT endpoint to update an entire quote
 app.put("/api/quotes/:id", (req, res) => {
   const quoteId = req.params.id;
-  const { customerId, email, discountAmount, isPercentage, lineItems, secretNotes } =
-    req.body;
+  // Ensure defaults are empty arrays if not provided in the request
+  const {
+    customerId,
+    email,
+    discountAmount,
+    isPercentage,
+    lineItems = [], // Default to empty array
+    secretNotes = [] // Default to empty array
+  } = req.body;
 
+  // --- Basic Input Validation ---
   if (!db) {
     return res.status(503).json({ error: "SQLite database not ready" });
   }
+  if (!customerId || !email || quoteId === undefined) { // Add more checks as needed
+     return res.status(400).json({ error: "Missing required fields (customerId, email, quoteId)." });
+  }
+   if (!Array.isArray(lineItems)) {
+     return res.status(400).json({ error: "lineItems must be an array." });
+  }
+  if (!Array.isArray(secretNotes)) {
+     return res.status(400).json({ error: "secretNotes must be an array." });
+  }
+  // --- End Validation ---
 
-  // Update the main quote
-  db.run(
-    "UPDATE Quotes SET CU_ID = ?, Email = ?, Discount_Amount = ?, isPercentage = ? WHERE QU_ID = ?",
-    [customerId, email, discountAmount, isPercentage ? 1 : 0, quoteId],
-    function (err) {
+
+  // Use db.serialize to ensure sequential execution with callbacks
+  db.serialize(() => {
+    let transactionError = null; // Flag to track errors within the transaction
+
+    // 1. Begin Transaction
+    db.run("BEGIN TRANSACTION", (err) => {
       if (err) {
-        return res
-          .status(500)
-          .json({ error: "Failed to update quote", details: err.message });
+        // Set flag - although serialize should stop, good practice
+        transactionError = new Error(`Failed to start transaction: ${err.message}`);
+        console.error(transactionError.message);
+        // Cannot reliably send response here due to async nature within serialize
+      }
+    });
+
+    // 2. Update the main quote details
+    const updateQuoteSql = `
+      UPDATE Quotes
+      SET CU_ID = ?, Email = ?, Discount_Amount = ?, isPercentage = ?
+      WHERE QU_ID = ?
+    `;
+    db.run(updateQuoteSql, [customerId, email, discountAmount, isPercentage ? 1 : 0, quoteId], function(err) {
+      if (transactionError) return; // Stop if previous step failed
+      if (err) {
+        transactionError = new Error(`Failed to update quote details: ${err.message}`);
+        console.error(transactionError.message);
+      } else if (this.changes === 0) {
+         // Important: Check if the quote actually existed
+         transactionError = new Error(`Quote not found with ID: ${quoteId}`);
+         console.error(transactionError.message);
+         // Set a different status code indicator if needed later
+      }
+    });
+
+    // 3. Delete existing line items for this quote
+    db.run("DELETE FROM Line_Item WHERE QU_ID = ?", [quoteId], (err) => {
+       if (transactionError) return;
+       if (err) {
+           transactionError = new Error(`Failed to delete old line items: ${err.message}`);
+           console.error(transactionError.message);
+       }
+    });
+
+    // 4. Delete existing secret notes for this quote
+    db.run("DELETE FROM SecretNotes WHERE QU_ID = ?", [quoteId], (err) => {
+      if (transactionError) return;
+      if (err) {
+          transactionError = new Error(`Failed to delete old secret notes: ${err.message}`);
+          console.error(transactionError.message);
+      }
+    });
+
+    // 5. Insert new line items (Adapted from your helper)
+    const lineItemSql = "INSERT INTO Line_Item (QU_ID, Description, Price) VALUES (?, ?, ?)";
+    lineItems.forEach((item) => {
+       if (transactionError) return; // Stop processing if an error occurred earlier
+
+       const price = parseFloat(item.price);
+       if (isNaN(price)) {
+          // Found invalid data - mark transaction for rollback
+          transactionError = new Error(`Invalid price for line item: ${item.description}`);
+          console.error(transactionError.message);
+          return; // Stop processing this item and subsequent ones in the loop
+       }
+
+       db.run(lineItemSql, [quoteId, item.description, price], (err) => {
+         // Check transactionError again inside callback, as it might have been set by a parallel operation
+         if (transactionError) return;
+         if (err) {
+           transactionError = new Error(`Failed to insert line item '${item.description}': ${err.message}`);
+           console.error(transactionError.message);
+         }
+       });
+    });
+
+    // 6. Insert new secret notes (Adapted from your helper)
+    const noteSql = "INSERT INTO SecretNotes (QU_ID, NoteText) VALUES (?, ?)";
+    secretNotes.forEach((note) => {
+      if (transactionError) return; // Stop processing if an error occurred earlier
+
+      db.run(noteSql, [quoteId, note.noteText || ""], (err) => {
+        if (transactionError) return;
+        if (err) {
+          transactionError = new Error(`Failed to insert secret note: ${err.message}`);
+          console.error(transactionError.message);
+        }
+      });
+    });
+
+    // 7. Commit or Rollback Transaction
+    db.run(transactionError ? "ROLLBACK" : "COMMIT", (err) => {
+      if (err) {
+        // Error during COMMIT or ROLLBACK itself
+        console.error(`Transaction ${transactionError ? 'rollback' : 'commit'} failed: ${err.message}`);
+        // If rollback failed, DB state might be inconsistent
+        return res.status(500).json({ error: `Failed to finalize transaction after error. DB state may be inconsistent. Original error: ${transactionError?.message}`, details: err.message });
       }
 
-      return res.status(200).json({ message: "Quote updated successfully" });
-    }
-  );
+      if (transactionError) {
+        // Rollback was successful, report the original error
+         // Check if the error was 'Quote not found'
+        if (transactionError.message.startsWith('Quote not found')) {
+            return res.status(404).json({ error: transactionError.message });
+        }
+        // Check if the error was due to invalid data
+        if (transactionError.message.startsWith('Invalid price')) {
+             return res.status(400).json({ error: "Invalid data provided", details: transactionError.message });
+        }
+        // Otherwise, it's likely a server/database error
+        return res.status(500).json({ error: "Failed to update quote due to error during transaction.", details: transactionError.message });
+      } else {
+        // Commit was successful
+        return res.status(200).json({ message: "Quote updated successfully", quoteId: quoteId });
+      }
+    });
+  }); // End db.serialize
 });
 
 // --- Helper Functions for SQLite Quote Creation ---
