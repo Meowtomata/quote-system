@@ -234,18 +234,19 @@ function App() {
       const payload = {
         quoteId: quoteInfo.QU_ID, // important: backend expects this
         customerId: quoteInfo.customerID,
+        email: quoteInfo.email, 
         discountAmount: parseFloat(quoteInfo.discountAmount) || 0,
-        isPercentage: quoteInfo.isPercentage ? 1 : 0, // stored as INT
+        isPercentage: quoteInfo.isPercentage,
         lineItems: quoteInfo.lineItems.map(item => ({
-          LI_ID: item.id, // must match Line_Item.LI_ID
-          Description: item.description,
-          Price: parseFloat(item.price) || 0
+            description: item.description, // Adjust key if needed
+            price: parseFloat(item.price) || 0
         })),
         secretNotes: quoteInfo.secretNotes.map(note => ({
-          SN_ID: note.id, // must match SecretNotes.SN_ID
-          NoteText: note.text
-        }))
+            noteText: note.text // Adjust key if needed
+        })),
       };
+          
+      console.log(JSON.stringify(payload));
   
       const response = await fetch(`http://localhost:3000/api/quotes/${payload.quoteId}`, {
         method: 'PUT',
@@ -255,6 +256,7 @@ function App() {
   
       if (!response.ok) throw new Error("Failed to update quote");
   
+      await fetchQuotes();
       console.log("✅ Quote updated successfully!");
       setShowQuoteInterface(false); // close the modal
     } catch (err) {
