@@ -18,7 +18,7 @@ function CustomerSelector({ customers, selectedID, setCustomerID, onAddNewQuote 
 
   return (
       <div className="customer-container">
-        <label htmlFor="customer-select" style={{ marginRight: '5px' }}>Customer:</label>
+        <label htmlFor="customer-select" style={{ marginRight: '5px' }}>CUSTOMER:</label>
         <select
           id="customer-select"
           value={selectedID}

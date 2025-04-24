@@ -8,7 +8,7 @@ const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, finalizedQuotes }) =
 
   return (
     <div className="quote-list-container">
-      <h2>Sanction</h2>
+      <h2>SANCTION</h2>
       <table className="quote-table">
         <thead>
           <tr>

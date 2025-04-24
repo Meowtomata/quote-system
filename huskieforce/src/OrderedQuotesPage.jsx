@@ -7,7 +7,7 @@ const OrderedQuotesPage = ({ onEditQuote, onOrderQuote, sanctionedQuotes }) => {
 
   return (
     <div className="quote-list-container">
-      <h2>Order</h2>
+      <h2>ORDER</h2>
       <table className="quote-table">
         <thead>
           <tr>
