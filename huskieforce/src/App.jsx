@@ -56,7 +56,7 @@ function App() {
       const mappedQuote = {
         QU_ID: quote.QU_ID,
         customerID: base.CU_ID,
-        email: base.email || '',
+        email: base.Email || '',
         lineItems: lineItems.map(li => ({
           id: li.LI_ID || Date.now(),
           description: li.Description,
@@ -68,8 +68,8 @@ function App() {
       };
   
       setQuoteInfo(mappedQuote);
-      setPreviousView(origin); // save where we came from
-      setViewState("edit-finalize");
+      setShowQuoteInterface(true);
+
     } catch (err) {
       console.error("Failed to fetch full quote data:", err);
     }
@@ -420,7 +420,7 @@ function App() {
         />
 )}
 
-{viewState === "edit-finalize" && (
+{showQuoteInterface && (
   <div className="overlay">
     <QuoteInterface
   quoteInfo={quoteInfo}
@@ -430,9 +430,7 @@ function App() {
   handleCreateQuote={handleCreateQuote}
   handleUpdateQuote={handleUpdateQuote}
   isEditing={true}
-  setShowQuoteInterface={(show) => {
-    if (!show) setViewState(previousView);
-  }}
+  setShowQuoteInterface={setShowQuoteInterface}
   isLoading={isLoading}
 />
   </div>
