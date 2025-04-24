@@ -15,10 +15,6 @@ function QuoteInterface({
   isLoading
 }) {
 
-  
-  
-  const isEditMode = !!quoteInfo?.QU_ID; // if quote has a QU_ID, assume edit mode
-
   const handleSubmitClick = (event) => {
     console.log(quoteInfo.email);
     console.log(quoteInfo.lineItems); 
@@ -29,6 +25,7 @@ function QuoteInterface({
     handleCreateQuote();
   };
 
+  console.log(isEditing);
   const handleCloseClick = () => {
     setShowQuoteInterface(false);
   };

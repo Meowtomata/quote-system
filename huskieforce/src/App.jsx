@@ -68,6 +68,7 @@ function App() {
       };
   
       setQuoteInfo(mappedQuote);
+      setIsEditing(true);
       setShowQuoteInterface(true);
 
     } catch (err) {
@@ -122,6 +123,7 @@ function App() {
 
   // when clicking add new quote, display quote interface
   const [showQuoteInterface, setShowQuoteInterface] = useState(false); 
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchAPI = async () => {
@@ -184,6 +186,7 @@ function App() {
       isPercentage: true
     });
 
+    setIsEditing(false);
     setShowQuoteInterface(true);
   };
 
@@ -198,6 +201,7 @@ function App() {
     setIsLoading(true);
     // set up information for Quote query
     const payload = {
+      salesAssociateId: quoteInfo.salesAssociateId,
       customerId: quoteInfo.customerID,
       email: quoteInfo.email, 
       discountAmount: parseFloat(quoteInfo.discountAmount) || 0,
@@ -411,6 +415,7 @@ function App() {
                 updateSecretNotes={updateSecretNotes}
                 handleCreateQuote={handleCreateQuote}
                 setShowQuoteInterface={setShowQuoteInterface}
+                isEditing={isEditing}
                 isLoading={isLoading}
             />
         </div>}
@@ -431,7 +436,7 @@ function App() {
   updateSecretNotes={updateSecretNotes}
   handleCreateQuote={handleCreateQuote}
   handleUpdateQuote={handleUpdateQuote}
-  isEditing={true}
+  isEditing={isEditing}
   setShowQuoteInterface={setShowQuoteInterface}
   isLoading={isLoading}
 />
