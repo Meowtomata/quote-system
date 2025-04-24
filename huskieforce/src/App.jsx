@@ -325,7 +325,6 @@ function App() {
       // Optionally show confirmation
       console.log("Quote status updated successfully!");
   
-      // ⬇️ Remove sanctioned quote from local list (UI update)
       await fetchQuotes();
   
     } catch (error) {
@@ -447,7 +446,7 @@ function App() {
 {viewState === "order" && (
   <OrderedQuotesPage
     onEditQuote={handleEditQuote}
-    onOrderQuote={handleOrderQuote} // ✅ This is required
+    onOrderQuote={handleOrderQuote} 
     sanctionedQuotes={sanctionedQuotes}
   />
 )}

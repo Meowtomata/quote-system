@@ -32,6 +32,7 @@ function CustomerSelector({ customers, selectedID, setCustomerID, onAddNewQuote 
             </option>
           ))}
         </select>
+        
         <button className="ANQuote" onClick={onAddNewQuote}>ADD NEW QUOTE</button>
 
       <p>TOTAL CUSTOMERS: {customers.length}</p>

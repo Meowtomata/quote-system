@@ -40,7 +40,7 @@ function FormSecretNote({ secretNotes = [], setSecretNotes }) {
           <textarea
             rows="3"
             value={newNote}
-            placeholder="ADD A NOTE..."
+            placeholder="ADD A NOTE"
             onChange={(e) => setNewNote(e.target.value)}
           />
           <br />
