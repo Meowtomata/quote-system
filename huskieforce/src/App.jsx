@@ -290,21 +290,28 @@ function App() {
   
   
 
-  const handleOrderQuote = async (quoteId) => {
+  const handleOrderQuote = async (quote) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newStatus: "Ordered" })
-      });
+      console.log(quote);
+      const response = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
+      const { quote: base, lineItems, secretNotes } = response.data;
+  
+      const payload = {
+        order: "order342",
+        custid: "1",
+        associate: "1",
+        amount: "1000",
+        name: "IB M",
+        processDay: "today",
+        commission: "106",
+      };
+      console.log(response);
 
-  
-      if (!response.ok) throw new Error("Failed to update status");
-  
-      console.log(`✅ Quote ${quoteId} updated to ORDERED`);
-  
+      console.log("Payload being sent:", JSON.stringify(payload));
+      const response2 = await axios.post("https://blitz.cs.niu.edu/purchaseorder", payload);
+      console.log(response2);
+
       await fetchQuotes();
-  
     } catch (error) {
       console.error("❌ Error updating quote to ordered:", error);
     }
@@ -435,7 +442,7 @@ function App() {
   updateSecretNotes={updateSecretNotes}
   handleCreateQuote={handleCreateQuote}
   handleUpdateQuote={handleUpdateQuote}
-  isEditing={isEditing}
+  isDate={isEditing}
   setShowQuoteInterface={setShowQuoteInterface}
   isLoading={isLoading}
 />

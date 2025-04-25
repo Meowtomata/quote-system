@@ -38,7 +38,7 @@ const OrderedQuotesPage = ({ onEditQuote, onOrderQuote, sanctionedQuotes }) => {
               <td>
               <div className="button-group">
               <button className="Edit" onClick={() => onEditQuote(quote, "ordered")}>EDIT</button>
-              <button className="Order" onClick={() => onOrderQuote(quote.QU_ID)}>ORDER</button>
+              <button className="Order" onClick={() => onOrderQuote(quote)}>ORDER</button>
               </div>
               </td>
             </tr>
