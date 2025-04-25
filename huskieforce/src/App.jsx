@@ -7,6 +7,7 @@ import QuoteInterface from "./QuoteInterface.jsx";
 import QuoteList from "./QuoteList.jsx";
 import CustomerSelector from './CustomerSelector.jsx';
 import './App.css'
+import LoginInterface from "./LoginInterface.jsx";
 import AdminDashboard from "./AdminDashboard.jsx";
 import DraftQuotesPage from "./DraftQuotesPage.jsx";
 import SanctionQuotesPage from "./SanctionQuotesPage.jsx";
@@ -21,7 +22,7 @@ function App() {
   const [previousView, setPreviousView] = useState("sanction"); // Default to sanction
 
   // Bleon's changes to App.jsx
-  const [viewState, setViewState] = useState("");
+  const [viewState, setViewState] = useState("login");
   const [selectedQuote, setSelectedQuote] = useState(null);
 
   // quotes will be passed down and filtered by status
@@ -104,6 +105,7 @@ function App() {
     }, []);
 
   const [quoteInfo, setQuoteInfo] = useState({
+    "salesAssociateID" : 0,
     "customerID" : 1,
     "email" : '',
     "lineItems" : [],
@@ -177,14 +179,14 @@ function App() {
   const handleAddNewQuoteClick = () => {
     console.log('Add New Quote button clicked!');
 
-    setQuoteInfo({
-      customerID: 1,
+    setQuoteInfo(prevQuoteInfo => ({
+      ...prevQuoteInfo, 
       email: '',
       lineItems: [],
       secretNotes: [],
       discountAmount: 0,
       isPercentage: true
-    });
+    }));
 
     setIsEditing(false);
     setShowQuoteInterface(true);
@@ -197,11 +199,12 @@ function App() {
     console.log("QuoteInfo at execution time:", JSON.stringify(quoteInfo));
 
     if (quoteInfo.lineItems.length === 0) { /* validation */ return; }
+    console.log("Customer ID: ", quoteInfo.customerID);
 
     setIsLoading(true);
     // set up information for Quote query
     const payload = {
-      salesAssociateId: quoteInfo.salesAssociateId,
+      salesAssociateId: quoteInfo.salesAssociateID,
       customerId: quoteInfo.customerID,
       email: quoteInfo.email, 
       discountAmount: parseFloat(quoteInfo.discountAmount) || 0,
@@ -395,8 +398,19 @@ function App() {
 
   return(
     <div className="App-container">
-    <Header />
-    <Buttons setViewState={setViewState} />
+    {viewState !== "login" &&
+        <div>
+      <Header />
+      <Buttons setViewState={setViewState} />
+      </div>
+    }
+      {viewState === "login" &&
+      <LoginInterface 
+          salesAssociates={salesAssociates}
+          setViewState={setViewState}
+          setSalesAssociateID={(value) => updateQuoteField('salesAssociateID', value)}
+        />
+      }
       {viewState === "draft" && 
           <div>
           <CustomerSelector 

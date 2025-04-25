@@ -12,7 +12,7 @@ function CustomerSelector({ customers, selectedID, setCustomerID, onAddNewQuote 
   };
 
   const handleSelectChange = (event) => {
-    console.log(event.target.value);
+    console.log("Customer ID in CustomerSelector.jsx : ", event.target.value);
     setCustomerID(parseInt(event.target.value)); // Pass the selected customer ID up
   };
 

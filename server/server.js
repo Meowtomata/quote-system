@@ -339,9 +339,8 @@ app.post("/api/quotes", (req, res) => {
   console.log("POST /api/quotes (SQLite) - Received body:", req.body);
 
   // --- 1. Extract and Validate Data ---
-  const { customerId, email, discountAmount, isPercentage, lineItems, secretNotes } =
+  const { salesAssociateId, customerId, email, discountAmount, isPercentage, lineItems, secretNotes } =
     req.body;
-  const salesAssociateId = 1; // !! Replace with actual auth logic !!
 
   // --- Basic Validation ---
   const errors = [];
