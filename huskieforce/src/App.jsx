@@ -443,6 +443,7 @@ function App() {
 
 {showQuoteInterface && (
   <div className="overlay">
+        <div className="modal-content">
     <QuoteInterface
   quoteInfo={quoteInfo}
   updateQuoteField={updateQuoteField}
@@ -455,6 +456,7 @@ function App() {
   isLoading={isLoading}
   disableEditingFields={disableEditingFields}
 />
+  </div>
   </div>
 )}
 

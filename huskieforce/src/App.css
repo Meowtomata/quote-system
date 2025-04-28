@@ -251,17 +251,13 @@ select option {
 }
 
 .quote-field input[type="email"] {
-  width: 100%;
+  width: 96%;
   padding: 10px;
   border: 1px solid #888;
   border-radius: 1px;
   background-color: #2b2b2b;
   color: #fff;
   font-size: 14px;
-}
-
-.quote-field input[type="email"]::placeholder {
-  color: #aaa;
 }
 
 .line-items,
@@ -387,7 +383,30 @@ textarea,
 input:disabled,
 textarea:disabled,
 button:disabled {
-  background-color: #f0f0f0;
   color: #888;
   cursor: not-allowed;
+}
+
+.overlay {
+  position: fixed; /* fixed so it covers the screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex; /* THIS makes it a flex container */
+  justify-content: center; /* center horizontally */
+  align-items: center; /* center vertically */
+  background-color: rgba(0, 0, 0, 0.5); /* optional: slight dark background */
+  z-index: 9999; /* ensure it appears above everything */
+  overflow: hidden; /* Important: no scroll on the overlay itself */
+}
+
+.modal-content {
+  background-color: #2a2a2a;
+  width: 500px; /* or however wide you want the pop up */
+  max-height: 90vh; /* critical so it doesn’t grow out of screen */
+  overflow-y: auto; /* scroll inside if too much content */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6);
 }

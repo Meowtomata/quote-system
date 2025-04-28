@@ -54,7 +54,10 @@ function QuoteInterface({
       />
       <FormSecretNote 
         secretNotes={quoteInfo.secretNotes}
-        setSecretNotes={updateSecretNotes}/>
+        setSecretNotes={updateSecretNotes}
+        disableEditingFields={disableEditingFields}
+        />
+        
       <FormDiscount 
         lineItems={quoteInfo.lineItems} 
         discountValue={quoteInfo.discountAmount}
