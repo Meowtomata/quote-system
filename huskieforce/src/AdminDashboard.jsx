@@ -6,12 +6,12 @@ function AdminDashboard() {
   const [tab, setTab] = useState("associates");
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div className="admin-container">
       <h2>ADMINISTRATION</h2>
 
-      <div style={{ marginBottom: "1rem" }}>
-        <button onClick={() => setTab("associates")}>SALES ASSOCIATES</button>
-        <button onClick={() => setTab("quotes")} style={{ marginLeft: "0.5rem" }}>
+      <div>
+        <button className="Sales" onClick={() => setTab("associates")}>ASSOCIATES</button>
+        <button className="QU" onClick={() => setTab("quotes")} style={{ marginLeft: "0.5rem" }}>
           QUOTES
         </button>
       </div>
