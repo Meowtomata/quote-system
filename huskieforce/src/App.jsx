@@ -427,6 +427,7 @@ function App() {
             onEditQuote={handleEditQuote}
             onFinalizeQuote={handleFinalizeQuote}
             draftQuotes={draftedQuotes}
+            customers={customers}
           />
           </div>
         }
