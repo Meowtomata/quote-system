@@ -26,6 +26,8 @@ function App() {
   const [viewState, setViewState] = useState("login");
   const [selectedQuote, setSelectedQuote] = useState(null);
 
+  const [loggedInUserID, setLoggedInUserID] = useState(-1);
+
   // quotes will be passed down and filtered by status
   const [allQuotes, setAllQuotes] = useState([]);
   const [allLineItems, setAllLineItems] = useState([]); 
@@ -110,7 +112,7 @@ function App() {
     }, []);
 
   const [quoteInfo, setQuoteInfo] = useState({
-    "salesAssociateID" : 0,
+    "salesAssociateID" : loggedInUserID,
     "customerID" : 1,
     "email" : '',
     "lineItems" : [],
@@ -209,7 +211,7 @@ function App() {
     setIsLoading(true);
     // set up information for Quote query
     const payload = {
-      salesAssociateId: quoteInfo.salesAssociateID,
+      salesAssociateId: loggedInUserID,
       customerId: quoteInfo.customerID,
       email: quoteInfo.email, 
       discountAmount: parseFloat(quoteInfo.discountAmount) || 0,
@@ -404,10 +406,20 @@ function App() {
     q.Status && q.Status.toLowerCase() === "sanctioned" 
   );
 
+  const currentSalesAssociateName = salesAssociates.find(salesAssociate => salesAssociate.SA_ID == loggedInUserID);
+
+  const handleLogOut = () =>
+  {
+    setViewState("login");
+    setLoggedInUserID(-1);
+  }
+
   return(
     <div className="App-container">
     {viewState !== "login" &&
         <div>
+      <p>Logged in as: {currentSalesAssociateName.Name}</p>
+      <button onClick={handleLogOut}>Log Out</button>
       <Header />
       <Buttons setViewState={setViewState} />
       </div>
@@ -416,7 +428,7 @@ function App() {
       <LoginInterface 
           salesAssociates={salesAssociates}
           setViewState={setViewState}
-          setSalesAssociateID={(value) => updateQuoteField('salesAssociateID', value)}
+          setSalesAssociateID={setLoggedInUserID}
         />
       }
       {viewState === "draft" && 

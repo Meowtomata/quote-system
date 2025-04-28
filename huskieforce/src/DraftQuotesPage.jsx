@@ -9,10 +9,9 @@ const DraftQuotesPage = ({ onEditQuote, onFinalizeQuote, draftQuotes, allLineIte
           <tr>
             <th>QUOTE ID</th>
             <th>Customer Name</th>
-            <th>SALES ASSOC. ID</th>
+            <th>ASSOC. ID</th>
             <th>STATUS</th>
             <th>Final Price</th>
-            <th>DISCOUNT</th>
             <th>CREATED DATE</th>
             <th>ACTION</th>
           </tr>
@@ -41,13 +40,6 @@ const DraftQuotesPage = ({ onEditQuote, onFinalizeQuote, draftQuotes, allLineIte
                 <td>{quote.SA_ID}</td>
                 <td>{quote.Status}</td>
                 <td>{`$${parseFloat(finalPrice).toFixed(2)}`}</td>
-                <td>
-                  {quote.Discount_Amount != null
-                    ? quote.isPercentage
-                      ? `${parseFloat(quote.Discount_Amount).toFixed(2)}%`
-                      : `$${parseFloat(quote.Discount_Amount).toFixed(2)}`
-                    : 'N/A'}
-                </td>
                 <td>{quote.Created_Date ?quote.Created_Date : 'N/A'}</td>
                 <td>
                   <div className="button-group">
