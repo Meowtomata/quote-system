@@ -511,7 +511,13 @@ function App() {
     sanctionedQuotes={sanctionedQuotes}
   />
 )}
-   {viewState === "admin" && <AdminDashboard />}
+   {viewState === "admin" && 
+        <AdminDashboard 
+            allQuotes={allQuotes} 
+            customers={customers} 
+            allLineItems={allLineItems}
+        />
+      }
 
     <CopyRight />
     </div>

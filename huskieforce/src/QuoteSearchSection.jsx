@@ -1,103 +1,87 @@
 import React, { useState } from "react";
 
-const mockQuotes = [
-  {
-    id: 1,
-    customer: "Tesla",
-    status: "finalized",
-    date: "2024-10-01",
-    associate: "Mary Beth",
-  },
-  {
-    id: 2,
-    customer: "Apple",
-    status: "ordered",
-    date: "2024-10-15",
-    associate: "John Doe",
-  },
-];
 
-function QuoteSearchSection() {
-  const [filters, setFilters] = useState({
-    status: "",
-    associate: "",
-    customer: "",
-    startDate: "",
-    endDate: "",
-  });
+function QuoteSearchSection({allQuotes, customers, allLineItems }) {
+  const [filters, setFilters] = useState({ status: "", associate: "", customer: "" });
 
-  const filtered = mockQuotes.filter((q) => {
-    const quoteDate = new Date(q.date);
-    const startDate = filters.startDate ? new Date(filters.startDate) : null;
-    const endDate = filters.endDate ? new Date(filters.endDate) : null;
+  console.log("Value of allQuotes:", allQuotes);
 
-    return (
-      (!filters.status || q.status === filters.status) &&
-      (!filters.associate || q.associate.includes(filters.associate)) &&
-      (!filters.customer || q.customer.toLowerCase().includes(filters.customer.toLowerCase())) &&
-      (!startDate || quoteDate >= startDate) &&
-      (!endDate || quoteDate <= endDate)
-    );
-  });
+  const filtered = allQuotes.filter((q) =>
+    (!filters.status || q.Status === filters.status) &&
+    (!filters.associate || q.SA_ID.includes(filters.associate)) &&
+    (!filters.customer || q.CU_ID.toLowerCase().includes(filters.customer.toLowerCase()))
+  );
 
   return (
-    <div className="quotes-container">
-      <h3>QUOTE SEARCH</h3>
-      <div className="QSearch">
-        <input
-          placeholder="CUSTOMER:"
-          value={filters.customer}
-          onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
-        />
-        <input
-          placeholder="SALES ASSOCIATE:"
-          value={filters.associate}
-          onChange={(e) => setFilters({ ...filters, associate: e.target.value })}
-        />
-          <label>START:</label>
-          <input
-            type="date"
-            placeholder="MM/DD/YYYY"
-            value={filters.startDate}
-            onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-          />
-          <label>END:</label>
-          <input
-            type="date"
-            placeholder="MM/DD/YYYY"
-            value={filters.endDate}
-            onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-          />
 
-<select onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
-          <option value="">- STATUS -</option>
-          <option value="finalized">FINALIZED</option>
-          <option value="sanctioned">SANCTIONED</option>
-          <option value="ordered">ORDERED</option>
-        </select>
-        
-      </div>
-
-      <table border="1" cellPadding="10" style={{ marginTop: "1rem" }}>
+    <div className="quote-list-container">
+      <h2>Quote Search</h2>
+      <input
+        placeholder="CUSTOMER:"
+        value={filters.customer}
+        onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
+      />
+      <input
+        placeholder="SALES ASSOCIATE:"
+        value={filters.associate}
+        onChange={(e) => setFilters({ ...filters, associate: e.target.value })}
+      />
+      <select onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
+        <option value="">- STATUS -</option>
+        <option value="Finalized">FINALIZED</option>
+        <option value="Sanctioned">SANCTIONED</option>
+        <option value="Ordered">ORDERED</option>
+      </select>
+      <table className="quote-table">
         <thead>
           <tr>
-            <th>ID</th><th>CUSTOMER</th><th>STATUS</th><th>DATE</th><th>ASSOCIATE</th>
+            <th>QUOTE ID</th>
+            <th>Customer Name</th>
+            <th>ASSOC. ID</th>
+            <th>STATUS</th>
+            <th>Final Price</th>
+            <th>CREATED DATE</th>
+            <th>ACTION</th>
           </tr>
         </thead>
         <tbody>
-          {filtered.map((q) => (
-            <tr key={q.id}>
-              <td>{q.id}</td>
-              <td>{q.customer}</td>
-              <td>{q.status}</td>
-              <td>{q.date}</td>
-              <td>{q.associate}</td>
-            </tr>
-          ))}
+          {filtered.map(quote => {
+            console.log(quote);
+            const customer = customers.find(customer => customer.id === quote.CU_ID);
+            const customerName = customer ? customer.name : 'N/A';
+            const lineItems = allLineItems.filter(lineItem => lineItem.QU_ID === quote.QU_ID);
+            const totalPrice = lineItems.reduce((total, item) => total + item.Price, 0);
+
+            let finalPrice = totalPrice;
+            if (quote.Discount_Amount != null) {
+              if (quote.isPercentage) {
+                finalPrice = totalPrice - (totalPrice * (parseFloat(quote.Discount_Amount) / 100));
+              } else {
+                finalPrice = totalPrice - parseFloat(quote.Discount_Amount);
+              }
+            }
+
+            return ( 
+              <tr key={quote.QU_ID}>
+                <td>{quote.QU_ID}</td>
+                <td>{customerName}</td>
+                <td>{quote.SA_ID}</td>
+                <td>{quote.Status}</td>
+                <td>{`$${parseFloat(finalPrice).toFixed(2)}`}</td>
+                <td>{quote.Created_Date ?quote.Created_Date : 'N/A'}</td>
+                <td>
+                  <div className="button-group">
+                    <button className="Edit" onClick={() => onEditQuote(quote, "draft")}>EDIT</button>
+                    <button className="Order" onClick={() => onFinalizeQuote(quote.QU_ID)}>Finalize Quote</button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
-}
+};
 
 export default QuoteSearchSection;
