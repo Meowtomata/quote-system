@@ -37,7 +37,7 @@ const OrderedQuotesPage = ({ onEditQuote, onOrderQuote, sanctionedQuotes }) => {
               <td>{quote.Created_Date ? new Date(quote.Created_Date).toLocaleDateString() : 'N/A'}</td>
               <td>
               <div className="button-group">
-              <button className="Edit" onClick={() => onEditQuote(quote, "ordered")}>EDIT</button>
+              <button className="Edit" onClick={() => onEditQuote(quote, "order")}>EDIT</button>
               <button className="Order" onClick={() => onOrderQuote(quote.QU_ID)}>ORDER</button>
               </div>
               </td>
