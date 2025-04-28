@@ -360,7 +360,6 @@ app.post("/api/quotes", (req, res) => {
   // --- 1. Extract and Validate Data ---
   const { salesAssociateId, customerId, email, discountAmount, isPercentage, lineItems, secretNotes } =
     req.body;
-
   // --- Basic Validation ---
   const errors = [];
   if (customerId == null || customerId < 0)
@@ -457,6 +456,7 @@ app.put("/api/quotes/:id/status", (req, res) => {
 
 app.put("/api/quotes/:id", (req, res) => {
   const quoteId = req.params.id;
+
   // Ensure defaults are empty arrays if not provided in the request
   const {
     customerId,

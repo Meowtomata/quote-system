@@ -18,7 +18,7 @@ function CustomerSelector({ customers, selectedID, setCustomerID, onAddNewQuote 
 
   return (
       <div className="customer-container">
-        <label htmlFor="customer-select" style={{ marginRight: '5px' }}>CUSTOMER:</label>
+        <label htmlFor="customer-select" style={{ marginRight: '5px' }}><b>CUSTOMER:</b></label>
         <select
           id="customer-select"
           value={selectedID}
@@ -32,10 +32,10 @@ function CustomerSelector({ customers, selectedID, setCustomerID, onAddNewQuote 
             </option>
           ))}
         </select>
-        
+        <div className="button-group">
         <button className="ANQuote" onClick={onAddNewQuote}>ADD NEW QUOTE</button>
-
-      <p>TOTAL CUSTOMERS: {customers.length}</p>
+        </div>
+      <p><b>TOTAL CUSTOMERS: {customers.length}</b></p>
     </div>
   );
 }

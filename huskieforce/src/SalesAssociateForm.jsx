@@ -24,13 +24,16 @@ function SalesAssociateForm({ onSave, initial }) {
   };
 
   return (
-    <div style={{ marginTop: "1rem" }}>
+    <div className="admin-container">
+      <h3>ADD ASSOCIATE(S)</h3>
+      <div className="AddAssoc">
       <input name="name" placeholder="NAME:" value={form.name} onChange={handleChange} />
       <input name="userId" placeholder="USER ID:" value={form.userId} onChange={handleChange} />
       <input name="password" placeholder="PASSWORD:" value={form.password} onChange={handleChange} />
       <input name="commission" placeholder="COMMISSION:" value={form.commission} onChange={handleChange} />
       <input name="address" placeholder="ADDRESS:" value={form.address} onChange={handleChange} />
-      <button onClick={handleSubmit}>{initial ? "UPDATE" : "ADD"} ASSOCIATE</button>
+      <button className="Add" onClick={handleSubmit}>{initial ? "UPDATE" : "ADD"}</button>
+    </div>
     </div>
   );
 }

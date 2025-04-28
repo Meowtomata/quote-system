@@ -145,7 +145,11 @@ footer {
 .Close,
 .Edit,
 .Sanction,
-.Order {
+.Order,
+.Sales,
+.QU,
+.Delete,
+.Add {
   padding: 10px 20px;
   background-color: #282828;
   color: #ffffff;
@@ -175,7 +179,11 @@ footer {
 .Close:hover,
 .Edit:hover,
 .Sanction:hover,
-.Order:hover {
+.Order:hover,
+.Sales:hover,
+.QU:hover,
+.Delete:hover,
+.Add:hover {
   background-color: #c12f2f;
 }
 
@@ -195,18 +203,26 @@ footer {
   margin: 20px 0;
 }
 
-.customer-container {
+.customer-container,
+.admin-container,
+.quotes-container {
   border: 1px solid #888;
   padding: 15px;
   border-radius: 1px;
-  max-width: 500px;
+  max-width: 1000px;
   margin: 20px auto;
   text-align: center;
   background-color: #2a2a2a;
   color: white;
+  justify-content: center;
+  overflow-x: auto;
+  text-align: center;
+  text-align: center;
 }
 
-.quote-list-container {
+.quote-list-container,
+.sales-associate-container,
+.quotes-container {
   border: 1px solid #888;
   padding: 15px;
   border-radius: 1px;
@@ -219,7 +235,9 @@ footer {
   text-align: center;
 }
 
-.quote-list-container table {
+.quote-list-container table,
+.sales-associate-container table,
+.quotes-container table {
   width: 100%;
   border-collapse: collapse;
   table-layout: auto;
@@ -227,7 +245,11 @@ footer {
 }
 
 .quote-list-container th,
-.quote-list-container td {
+.quote-list-container td,
+.sales-associate-container th,
+.sales-associate-container td,
+.quotes-container th,
+.quotes-container td {
   padding: 10px 12px;
   border: #ccc;
   text-align: left;
@@ -250,17 +272,13 @@ select option {
 }
 
 .quote-field input[type="email"] {
-  width: 100%;
+  width: 96%;
   padding: 10px;
   border: 1px solid #888;
   border-radius: 1px;
   background-color: #2b2b2b;
   color: #fff;
   font-size: 14px;
-}
-
-.quote-field input[type="email"]::placeholder {
-  color: #aaa;
 }
 
 .line-items,
@@ -289,7 +307,8 @@ select option {
 .line-item input[type="number"],
 .add-item input[type="text"],
 .add-item input[type="number"],
-.add-note input[type="text"] {
+.add-note input[type="text"],
+.description input {
   background-color: #1e1e1e;
   color: #fff;
   border: 1px solid #555;
@@ -305,6 +324,45 @@ select option {
   font-size: 16px;
   color: #ddd;
   margin-right: 10px;
+}
+
+.AddAssoc {
+  display: flex;
+  align-items: center;
+  background-color: #2a2a2a;
+  border-radius: 1px;
+  padding: 10px;
+  border: none;
+  color: white;
+}
+
+.QSearch {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
+.QSearch {
+  display: flex;
+  align-items: center;
+  background-color: #2a2a2a;
+  border-radius: 1px;
+  padding: 10px;
+  border: 1px solid #888;
+  color: white;
+}
+
+.QSearch input,
+.AddAssoc input {
+  background-color: #1e1e1e;
+  color: white;
+  border: 1px solid #555;
+  padding: 6px;
+  width: 100%;
+  margin-right: 10px;
+  border-radius: 1px;
+  resize: none;
 }
 
 .notes {
@@ -380,4 +438,35 @@ textarea,
   margin: 4px 0;
   font-size: 14px;
   color: #ccc;
+}
+
+input:disabled,
+textarea:disabled,
+button:disabled {
+  color: #888;
+  cursor: not-allowed;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.modal-content {
+  background-color: #2a2a2a;
+  width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6);
 }

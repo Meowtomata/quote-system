@@ -34,10 +34,10 @@ const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, finalizedQuotes }) =
                   ? `${parseFloat(quote.Discount_Amount).toFixed(2)}%`
                   : `$${parseFloat(quote.Discount_Amount).toFixed(2)}`) : 'N/A'}
               </td>
-              <td>{quote.Created_At ? new Date(quote.Created_At).toLocaleDateString() : 'N/A'}</td>
+              <td>{quote.Created_Date ? new Date(quote.Created_Date).toLocaleDateString() : 'N/A'}</td>
               <td>
               <div className="button-group">
-              <button className="Edit" onClick={() => onEditQuote(quote, "sanction")}>EDIT</button>
+              <button className="Edit" onClick={() => onEditQuote(quote, "sanction", true)}>EDIT</button>
                 <button className="Sanction" onClick={() => onSanctionQuote(quote.QU_ID)}>SANCTION</button>
               </div>
               </td>

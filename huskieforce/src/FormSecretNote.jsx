@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function FormSecretNote({ secretNotes = [], setSecretNotes }) {
+function FormSecretNote({ secretNotes = [], setSecretNotes, disableEditingFields={notes:false}  }) {
   // ===== NOTES STATE =====
   const [newNote, setNewNote] = useState('');
 
@@ -42,10 +42,11 @@ function FormSecretNote({ secretNotes = [], setSecretNotes }) {
             value={newNote}
             placeholder="ADD A NOTE"
             onChange={(e) => setNewNote(e.target.value)}
+            disabled={disableEditingFields.notes}
           />
           <br />
           <div className="button-groupV3">
-          <button className="NoteButton" onClick={addNote}>ADD</button>
+          <button className="NoteButton" onClick={addNote} disabled={disableEditingFields.notes}>ADD</button>
           </div>
         </div>
 
@@ -57,15 +58,16 @@ function FormSecretNote({ secretNotes = [], setSecretNotes }) {
                   rows="3"
                   value={note.text}
                   onChange={(e) => updateNote(note.id, e.target.value)}
+                  disabled={disableEditingFields.notes}
                 />
               ) : (
                 <p>{note.text}</p>
               )}
               <div className="button-groupV3"> 
-              <button className="NoteSE" onClick={() => toggleEditNote(note.id)}>
+              <button className="NoteSE" onClick={() => toggleEditNote(note.id)} disabled={disableEditingFields.notes}>
                 {note.editing ? 'SAVE' : 'EDIT'}
               </button>
-              <button className="NoteD" onClick={() => deleteNote(note.id)}>DELETE</button>
+              <button className="NoteD" onClick={() => deleteNote(note.id)} disabled={disableEditingFields.notes}>DELETE</button>
             </div>
             </div>
           ))}

@@ -24,7 +24,7 @@ function SalesAssociateSection() {
   };
 
   return (
-    <div>
+    <div className="sales-associate-container">
       <h3>SALES ASSOCIATES</h3>
       <table border="1" cellPadding="10">
         <thead>
@@ -41,8 +41,10 @@ function SalesAssociateSection() {
               <td>${a.commission.toFixed(2)}</td>
               <td>{a.address}</td>
               <td>
-                <button onClick={() => setEditing(a)}>EDIT</button>
-                <button onClick={() => handleDelete(a.id)}>DELETE</button>
+                <div className="button-group">
+                <button className="Edit" onClick={() => setEditing(a)}>EDIT</button>
+                <button className="Delete" onClick={() => handleDelete(a.id)}>DELETE</button>
+                </div>
               </td>
             </tr>
           ))}
