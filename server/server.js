@@ -331,6 +331,25 @@ app.get("/api/quotes", (req, res) => {
   });
 });
 
+// GET Line Items
+app.get("/api/line-items", (req, res) => {
+  if (!db) return res.status(503).json({ error: "SQLite database not ready" }); // Check SQLite connection
+  db.all("SELECT * FROM Line_Item", [], (err, rows) => {
+    // Use SQLite 'db'
+    if (err) {
+      console.error("SQLite Error fetching quotes:", err.message);
+      res
+        .status(500)
+        .json({ error: "SQLite query failed", details: err.message });
+      return;
+    }
+    res.json({
+      message: "success (SQLite)",
+      data: rows,
+    });
+  });
+});
+
 // POST Endpoint for Creating Quotes (Uses SQLite)
 app.post("/api/quotes", (req, res) => {
   const requestId = Date.now(); // Simple unique ID for logging

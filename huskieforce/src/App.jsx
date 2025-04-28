@@ -28,14 +28,18 @@ function App() {
 
   // quotes will be passed down and filtered by status
   const [allQuotes, setAllQuotes] = useState([]);
+  const [allLineItems, setAllLineItems] = useState([]); 
 
   const fetchQuotes = async () => {
     console.log("Fetching all quotes...");
     setIsLoading(true); // Show loading indicator
     setError(null);     // Clear previous errors
     try {
-      const res = await axios.get("http://localhost:3000/api/quotes");
-      setAllQuotes(Array.isArray(res.data.data) ? res.data.data : []);
+      const quotesRes = await axios.get("http://localhost:3000/api/quotes");
+      setAllQuotes(Array.isArray(quotesRes.data.data) ? quotesRes.data.data : []);
+      const lineItemsRes = await axios.get("http://localhost:3000/api/line-items");
+      setAllLineItems(Array.isArray(lineItemsRes.data.data) ? lineItemsRes.data.data : []);
+
     } catch (err) {
       console.error("Failed to load quotes:", err);
       setError("Failed to load quotes.");
@@ -427,6 +431,7 @@ function App() {
             onEditQuote={handleEditQuote}
             onFinalizeQuote={handleFinalizeQuote}
             draftQuotes={draftedQuotes}
+            allLineItems={allLineItems}
             customers={customers}
           />
           </div>
