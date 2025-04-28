@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 import Header from "./HuskieForceHeader.jsx"
 import CopyRight from "./HuskieForceCR.jsx";
 import Buttons from "./Buttons.jsx";
@@ -7,6 +8,7 @@ import QuoteInterface from "./QuoteInterface.jsx";
 import QuoteList from "./QuoteList.jsx";
 import CustomerSelector from './CustomerSelector.jsx';
 import './App.css'
+import LoginInterface from "./LoginInterface.jsx";
 import AdminDashboard from "./AdminDashboard.jsx";
 import DraftQuotesPage from "./DraftQuotesPage.jsx";
 import SanctionQuotesPage from "./SanctionQuotesPage.jsx";
@@ -28,19 +30,25 @@ function App() {
   
 
   // Bleon's changes to App.jsx
-  const [viewState, setViewState] = useState("");
+  const [viewState, setViewState] = useState("login");
   const [selectedQuote, setSelectedQuote] = useState(null);
+
+  const [loggedInUserID, setLoggedInUserID] = useState(-1);
 
   // quotes will be passed down and filtered by status
   const [allQuotes, setAllQuotes] = useState([]);
+  const [allLineItems, setAllLineItems] = useState([]); 
 
   const fetchQuotes = async () => {
     console.log("Fetching all quotes...");
     setIsLoading(true); // Show loading indicator
     setError(null);     // Clear previous errors
     try {
-      const res = await axios.get("http://localhost:3000/api/quotes");
-      setAllQuotes(Array.isArray(res.data.data) ? res.data.data : []);
+      const quotesRes = await axios.get("http://localhost:3000/api/quotes");
+      setAllQuotes(Array.isArray(quotesRes.data.data) ? quotesRes.data.data : []);
+      const lineItemsRes = await axios.get("http://localhost:3000/api/line-items");
+      setAllLineItems(Array.isArray(lineItemsRes.data.data) ? lineItemsRes.data.data : []);
+
     } catch (err) {
       console.error("Failed to load quotes:", err);
       setError("Failed to load quotes.");
@@ -119,6 +127,7 @@ function App() {
     }, []);
 
   const [quoteInfo, setQuoteInfo] = useState({
+    "salesAssociateID" : loggedInUserID,
     "customerID" : 1,
     "email" : '',
     "lineItems" : [],
@@ -192,14 +201,14 @@ function App() {
   const handleAddNewQuoteClick = () => {
     console.log('Add New Quote button clicked!');
 
-    setQuoteInfo({
-      customerID: 1,
+    setQuoteInfo(prevQuoteInfo => ({
+      ...prevQuoteInfo, 
       email: '',
       lineItems: [],
       secretNotes: [],
       discountAmount: 0,
       isPercentage: true
-    });
+    }));
 
     setIsEditing(false);
     setShowQuoteInterface(true);
@@ -212,11 +221,12 @@ function App() {
     console.log("QuoteInfo at execution time:", JSON.stringify(quoteInfo));
 
     if (quoteInfo.lineItems.length === 0) { /* validation */ return; }
+    console.log("Customer ID: ", quoteInfo.customerID);
 
     setIsLoading(true);
     // set up information for Quote query
     const payload = {
-      salesAssociateId: quoteInfo.salesAssociateId,
+      salesAssociateId: loggedInUserID,
       customerId: quoteInfo.customerID,
       email: quoteInfo.email, 
       discountAmount: parseFloat(quoteInfo.discountAmount) || 0,
@@ -305,21 +315,31 @@ function App() {
   
   
 
-  const handleOrderQuote = async (quoteId) => {
+  const handleOrderQuote = async (quote) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newStatus: "Ordered" })
-      });
+      console.log(quote);
+      const response = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
+      const { quote: base, lineItems } = response.data;
 
-  
-      if (!response.ok) throw new Error("Failed to update status");
-  
-      console.log(`✅ Quote ${quoteId} updated to ORDERED`);
-  
+      const customer = customers.find(customer => customer.id === base.CU_ID);
+
+      const payload = {
+        order: uuidv4(),
+        custid: base.CU_ID,
+        associate: base.SA_ID, 
+        amount: lineItems.reduce((total, item) => total + item.Price, 0),
+        name: customer.name,
+        processDay: new Date(),
+        commission: "106",
+      };
+      console.log(response);
+
+      console.log("Payload being sent:", JSON.stringify(payload));
+
+      const response2 = await axios.post("https://blitz.cs.niu.edu/purchaseorder", payload);
+      // console.log(response2);
+
       await fetchQuotes();
-  
     } catch (error) {
       console.error("❌ Error updating quote to ordered:", error);
     }
@@ -401,10 +421,31 @@ function App() {
     q.Status && q.Status.toLowerCase() === "sanctioned" 
   );
 
+  const currentSalesAssociateName = salesAssociates.find(salesAssociate => salesAssociate.SA_ID == loggedInUserID);
+
+  const handleLogOut = () =>
+  {
+    setViewState("login");
+    setLoggedInUserID(-1);
+  }
+
   return(
     <div className="App-container">
-    <Header />
-    <Buttons setViewState={setViewState} />
+    {viewState !== "login" &&
+        <div>
+      <p>Logged in as: {currentSalesAssociateName.Name}</p>
+      <button onClick={handleLogOut}>Log Out</button>
+      <Header />
+      <Buttons setViewState={setViewState} />
+      </div>
+    }
+      {viewState === "login" &&
+      <LoginInterface 
+          salesAssociates={salesAssociates}
+          setViewState={setViewState}
+          setSalesAssociateID={setLoggedInUserID}
+        />
+      }
       {viewState === "draft" && 
           <div>
           <CustomerSelector 
@@ -417,6 +458,8 @@ function App() {
             onEditQuote={handleEditQuote}
             onFinalizeQuote={handleFinalizeQuote}
             draftQuotes={draftedQuotes}
+            allLineItems={allLineItems}
+            customers={customers}
           />
           </div>
         }
@@ -451,7 +494,7 @@ function App() {
   updateSecretNotes={updateSecretNotes}
   handleCreateQuote={handleCreateQuote}
   handleUpdateQuote={handleUpdateQuote}
-  isEditing={isEditing}
+  isDate={isEditing}
   setShowQuoteInterface={setShowQuoteInterface}
   isLoading={isLoading}
   disableEditingFields={disableEditingFields}
