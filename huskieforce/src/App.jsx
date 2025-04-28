@@ -517,6 +517,7 @@ function App() {
             salesAssociates={salesAssociates}
             customers={customers} 
             allLineItems={allLineItems}
+            onEditQuote={handleEditQuote}
         />
       }
 

@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 
 
-function QuoteSearchSection({allQuotes, customers, allLineItems }) {
+function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems }) {
   const [filters, setFilters] = useState({ status: "", associate: "", customer: "" });
 
   console.log("Value of allQuotes:", allQuotes);
 
   const filtered = allQuotes.filter((q) =>
     (!filters.status || q.Status === filters.status) &&
-    (!filters.associate || q.SA_ID.includes(filters.associate)) &&
-    (!filters.customer || q.CU_ID.toLowerCase().includes(filters.customer.toLowerCase()))
+    // (!filters.associate || q.SA_ID.includes(filters.associate)) &&
+    // (!filters.customer || q.CU_ID.toLowerCase().includes(filters.customer.toLowerCase()))
   );
 
   return (
@@ -71,8 +71,7 @@ function QuoteSearchSection({allQuotes, customers, allLineItems }) {
                 <td>{quote.Created_Date ?quote.Created_Date : 'N/A'}</td>
                 <td>
                   <div className="button-group">
-                    <button className="Edit" onClick={() => onEditQuote(quote, "draft")}>EDIT</button>
-                    <button className="Order" onClick={() => onFinalizeQuote(quote.QU_ID)}>Finalize Quote</button>
+                    <button className="Edit" onClick={() => onEditQuote(quote, "draft")}>View</button>
                   </div>
                 </td>
               </tr>
