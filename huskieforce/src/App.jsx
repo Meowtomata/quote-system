@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 import Header from "./HuskieForceHeader.jsx"
 import CopyRight from "./HuskieForceCR.jsx";
 import Buttons from "./Buttons.jsx";
@@ -297,22 +298,25 @@ function App() {
     try {
       console.log(quote);
       const response = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
-      const { quote: base, lineItems, secretNotes } = response.data;
-  
+      const { quote: base, lineItems } = response.data;
+
+      const customer = customers.find(customer => customer.id === base.CU_ID);
+
       const payload = {
-        order: "order342",
-        custid: "1",
-        associate: "1",
-        amount: "1000",
-        name: "IB M",
-        processDay: "today",
+        order: uuidv4(),
+        custid: base.CU_ID,
+        associate: base.SA_ID, 
+        amount: lineItems.reduce((total, item) => total + item.Price, 0),
+        name: customer.name,
+        processDay: new Date(),
         commission: "106",
       };
       console.log(response);
 
       console.log("Payload being sent:", JSON.stringify(payload));
+
       const response2 = await axios.post("https://blitz.cs.niu.edu/purchaseorder", payload);
-      console.log(response2);
+      // console.log(response2);
 
       await fetchQuotes();
     } catch (error) {
