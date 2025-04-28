@@ -7,7 +7,7 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems }) 
   console.log("Value of allQuotes:", allQuotes);
 
   const filtered = allQuotes.filter((q) =>
-    (!filters.status || q.Status === filters.status) &&
+    (!filters.status || q.Status === filters.status) // &&
     // (!filters.associate || q.SA_ID.includes(filters.associate)) &&
     // (!filters.customer || q.CU_ID.toLowerCase().includes(filters.customer.toLowerCase()))
   );
