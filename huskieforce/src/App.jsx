@@ -514,6 +514,7 @@ function App() {
    {viewState === "admin" && 
         <AdminDashboard 
             allQuotes={allQuotes} 
+            salesAssociates={salesAssociates}
             customers={customers} 
             allLineItems={allLineItems}
         />

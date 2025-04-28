@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import SalesAssociateForm from "./SalesAssociateForm";
 
-const initialData = [
-  { id: 1, name: "Mary Beth", userId: "maryb", password: "1234", commission: 6193.58, address: "123 Main St" },
-  { id: 2, name: "John Doe", userId: "johnd", password: "abcd", commission: 1229.40, address: "456 Oak Ave" },
-];
-
-function SalesAssociateSection() {
-  const [associates, setAssociates] = useState(initialData);
+function SalesAssociateSection({salesAssociates}) {
   const [editing, setEditing] = useState(null);
 
   const handleDelete = (id) => {
@@ -33,17 +27,17 @@ function SalesAssociateSection() {
           </tr>
         </thead>
         <tbody>
-          {associates.map((a) => (
-            <tr key={a.id}>
-              <td>{a.name}</td>
-              <td>{a.userId}</td>
-              <td>{a.password}</td>
-              <td>${a.commission.toFixed(2)}</td>
-              <td>{a.address}</td>
+          {salesAssociates.map((a) => (
+            <tr key={a.SA_ID}>
+              <td>{a.Name}</td>
+              <td>{a.User_ID}</td>
+              <td>{a.Password}</td>
+              <td>${a.Accumulated_Commission.toFixed(2)}</td>
+              <td>{a.Address}</td>
               <td>
                 <div className="button-group">
                 <button className="Edit" onClick={() => setEditing(a)}>EDIT</button>
-                <button className="Delete" onClick={() => handleDelete(a.id)}>DELETE</button>
+                <button className="Delete" onClick={() => handleDelete(a.SA_ID)}>DELETE</button>
                 </div>
               </td>
             </tr>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import SalesAssociateSection from "./SalesAssociateSection";
 import QuoteSearchSection from "./QuoteSearchSection";
 
-function AdminDashboard({ allQuotes, customers, allLineItems }) {
+function AdminDashboard({ allQuotes, salesAssociates, customers, allLineItems }) {
   const [tab, setTab] = useState("associates");
 
   return (
@@ -16,7 +16,12 @@ function AdminDashboard({ allQuotes, customers, allLineItems }) {
         </button>
       </div>
 
-      {tab === "associates" && <SalesAssociateSection />}
+      {tab === "associates" && 
+        <SalesAssociateSection 
+          salesAssociates={salesAssociates}
+        />
+
+      }
       {tab === "quotes" && 
         <QuoteSearchSection 
           allQuotes={allQuotes} 
