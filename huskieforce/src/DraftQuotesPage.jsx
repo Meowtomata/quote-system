@@ -11,7 +11,7 @@ const DraftQuotesPage = ({ onEditQuote, onFinalizeQuote, draftQuotes, allLineIte
             <th>Customer Name</th>
             <th>SALES ASSOC. ID</th>
             <th>STATUS</th>
-            <th>Total Price</th>
+            <th>Final Price</th>
             <th>DISCOUNT</th>
             <th>CREATED DATE</th>
             <th>ACTION</th>
@@ -24,13 +24,23 @@ const DraftQuotesPage = ({ onEditQuote, onFinalizeQuote, draftQuotes, allLineIte
             const customerName = customer ? customer.name : 'N/A';
             const lineItems = allLineItems.filter(lineItem => lineItem.QU_ID === quote.QU_ID);
             const totalPrice = lineItems.reduce((total, item) => total + item.Price, 0);
+
+            let finalPrice = totalPrice;
+            if (quote.Discount_Amount != null) {
+              if (quote.isPercentage) {
+                finalPrice = totalPrice - (totalPrice * (parseFloat(quote.Discount_Amount) / 100));
+              } else {
+                finalPrice = totalPrice - parseFloat(quote.Discount_Amount);
+              }
+            }
+
             return ( 
               <tr key={quote.QU_ID}>
                 <td>{quote.QU_ID}</td>
                 <td>{customerName}</td>
                 <td>{quote.SA_ID}</td>
                 <td>{quote.Status}</td>
-                <td>{`$${parseFloat(totalPrice).toFixed(2)}`}</td>
+                <td>{`$${parseFloat(finalPrice).toFixed(2)}`}</td>
                 <td>
                   {quote.Discount_Amount != null
                     ? quote.isPercentage
@@ -38,7 +48,7 @@ const DraftQuotesPage = ({ onEditQuote, onFinalizeQuote, draftQuotes, allLineIte
                       : `$${parseFloat(quote.Discount_Amount).toFixed(2)}`
                     : 'N/A'}
                 </td>
-                <td>{quote.Created_At ? new Date(quote.Created_At).toLocaleDateString() : 'N/A'}</td>
+                <td>{quote.Created_Date ?quote.Created_Date : 'N/A'}</td>
                 <td>
                   <div className="button-group">
                     <button className="Edit" onClick={() => onEditQuote(quote, "draft")}>EDIT</button>
