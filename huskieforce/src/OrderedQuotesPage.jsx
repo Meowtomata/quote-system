@@ -34,7 +34,7 @@ const OrderedQuotesPage = ({ onEditQuote, onOrderQuote, sanctionedQuotes }) => {
                     : `$${parseFloat(quote.Discount_Amount).toFixed(2)}`
                   : 'N/A'}
               </td>
-              <td>{quote.Created_At ? new Date(quote.Created_At).toLocaleDateString() : 'N/A'}</td>
+              <td>{quote.Created_Date ? new Date(quote.Created_Date).toLocaleDateString() : 'N/A'}</td>
               <td>
               <div className="button-group">
               <button className="Edit" onClick={() => onEditQuote(quote, "ordered")}>EDIT</button>

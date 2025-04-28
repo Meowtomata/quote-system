@@ -204,6 +204,7 @@ footer {
   text-align: center;
   background-color: #2a2a2a;
   color: white;
+  justify-content: center;
 }
 
 .quote-list-container {
@@ -289,7 +290,8 @@ select option {
 .line-item input[type="number"],
 .add-item input[type="text"],
 .add-item input[type="number"],
-.add-note input[type="text"] {
+.add-note input[type="text"],
+.description input {
   background-color: #1e1e1e;
   color: #fff;
   border: 1px solid #555;
@@ -380,4 +382,12 @@ textarea,
   margin: 4px 0;
   font-size: 14px;
   color: #ccc;
+}
+
+input:disabled,
+textarea:disabled,
+button:disabled {
+  background-color: #f0f0f0;
+  color: #888;
+  cursor: not-allowed;
 }

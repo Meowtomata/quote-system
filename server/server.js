@@ -339,8 +339,14 @@ app.post("/api/quotes", (req, res) => {
   console.log("POST /api/quotes (SQLite) - Received body:", req.body);
 
   // --- 1. Extract and Validate Data ---
-  const { customerId, email, discountAmount, isPercentage, lineItems, secretNotes } =
-    req.body;
+  const {
+    customerId,
+    email,
+    discountAmount,
+    isPercentage,
+    lineItems,
+    secretNotes,
+  } = req.body;
   const salesAssociateId = 1; // !! Replace with actual auth logic !!
 
   // --- Basic Validation ---
@@ -440,8 +446,14 @@ app.put("/api/quotes/:id/status", (req, res) => {
 // PUT endpoint to update an entire quote
 app.put("/api/quotes/:id", (req, res) => {
   const quoteId = req.params.id;
-  const { customerId, email, discountAmount, isPercentage, lineItems, secretNotes } =
-    req.body;
+  const {
+    customerId,
+    email,
+    discountAmount,
+    isPercentage,
+    lineItems,
+    secretNotes,
+  } = req.body;
 
   if (!db) {
     return res.status(503).json({ error: "SQLite database not ready" });

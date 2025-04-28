@@ -20,6 +20,13 @@ function App() {
   const [error, setError] = useState(null);          // State to track errors
   const [previousView, setPreviousView] = useState("sanction"); // Default to sanction
 
+  const [disableEditingFields, setDisableEditingFields] = useState({
+    email: false,
+    lineItems: false,
+    notes: false
+  });
+  
+
   // Bleon's changes to App.jsx
   const [viewState, setViewState] = useState("");
   const [selectedQuote, setSelectedQuote] = useState(null);
@@ -70,6 +77,14 @@ function App() {
       setQuoteInfo(mappedQuote);
       setIsEditing(true);
       setShowQuoteInterface(true);
+
+      if (origin === "sanction") {
+        setDisableEditingFields({ email: true, lineItems: false, notes: false });
+      } else if (origin === "order") {
+        setDisableEditingFields({ email: true, lineItems: true, notes: true });
+      } else {
+        setDisableEditingFields({ email: false, lineItems: false, notes: false });
+      }
 
     } catch (err) {
       console.error("Failed to fetch full quote data:", err);
@@ -438,6 +453,7 @@ function App() {
   isEditing={isEditing}
   setShowQuoteInterface={setShowQuoteInterface}
   isLoading={isLoading}
+  disableEditingFields={disableEditingFields}
 />
   </div>
 )}
@@ -453,7 +469,6 @@ function App() {
    {viewState === "admin" && <AdminDashboard />}
 
     <CopyRight />
-    <button onClick={handleCreateAssociate}>Test Button for Sales Associate</button>
     </div>
   );
 }

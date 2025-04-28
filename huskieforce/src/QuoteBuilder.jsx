@@ -78,7 +78,7 @@ function QuoteEditor({ lineItems = [], isFinalizeMode = false, mode = "sanction"
 
   // ===== RETURN UI =====
   return (
-    <>
+    <div className="quote-builder">
     <div>
         <h3>NOTES</h3>
         <div className="add-note">
@@ -140,7 +140,7 @@ function QuoteEditor({ lineItems = [], isFinalizeMode = false, mode = "sanction"
     : "FINALIZE QUOTE"}
 </button>
 
-    </>
+    </div>
   );
 }
 

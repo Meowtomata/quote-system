@@ -12,7 +12,8 @@ function QuoteInterface({
   handleUpdateQuote,
   isEditing,
   setShowQuoteInterface,
-  isLoading
+  isLoading,
+  disableEditingFields={}
 }) {
 
   const handleSubmitClick = (event) => {
@@ -41,6 +42,7 @@ function QuoteInterface({
         type="email"
         value={quoteInfo.email}
         onChange={(e) => updateQuoteField('email', e.target.value)}
+        disabled={disableEditingFields.email}
         placeholder="ENTER EMAIL"
         />
         </div>
@@ -48,6 +50,7 @@ function QuoteInterface({
       <FormLineItem
         lineItems={quoteInfo.lineItems} 
         setLineItems={updateLineItems} 
+        disableEditingFields={disableEditingFields}
       />
       <FormSecretNote 
         secretNotes={quoteInfo.secretNotes}

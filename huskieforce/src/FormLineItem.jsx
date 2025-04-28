@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function FormLineItem({ lineItems = [], setLineItems }) {
+function FormLineItem({ lineItems = [], setLineItems, disableEditingFields={lineItems:false} }) {
   const [newItem, setNewItem] = useState({ description: '', price: '' });
 
   const handleInputChange = (e) => {
@@ -44,6 +44,7 @@ function FormLineItem({ lineItems = [], setLineItems }) {
           value={newItem.description}
           placeholder="DESCRIPTION"
           onChange={handleInputChange}
+          disabled={disableEditingFields.lineItems}
         />
         <input
           type="number"
@@ -51,9 +52,10 @@ function FormLineItem({ lineItems = [], setLineItems }) {
           value={newItem.price}
           placeholder="PRICE"
           onChange={handleInputChange}
+          disabled={disableEditingFields.lineItems}
         />
         <div className="button-groupV2">
-          <button className="LIAdd" onClick={addItem}>ADD</button>
+          <button className="LIAdd" onClick={addItem} disabled={disableEditingFields.lineItems}>ADD</button>
         </div>
       </div>
 
@@ -63,14 +65,18 @@ function FormLineItem({ lineItems = [], setLineItems }) {
           <div key={item.id || item.description + item.price + index} className="line-item">
             {item.editing ? (
               <>
+              <div className="description">
                 <input
                   value={item.description}
                   onChange={(e) => updateItem(item.id, 'description', e.target.value)}
+                  disabled={disableEditingFields.lineItems}
                 />
+                </div>
                 <input
                   type="number"
                   value={item.price}
                   onChange={(e) => updateItem(item.id, 'price', e.target.value)}
+                  disabled={disableEditingFields.lineItems}
                 />
               </>
             ) : (
@@ -80,10 +86,10 @@ function FormLineItem({ lineItems = [], setLineItems }) {
               </>
             )}
             <div className="button-groupV3">
-              <button className="LIButton" onClick={() => toggleEdit(item.id)}>
+              <button className="LIButton" onClick={() => toggleEdit(item.id)} disabled={disableEditingFields.lineItems}>
                 {item.editing ? 'SAVE' : 'EDIT'}
               </button>
-              <button className="LIDelete" onClick={() => deleteItem(item.id)}>DELETE</button>
+              <button className="LIDelete" onClick={() => deleteItem(item.id)} disabled={disableEditingFields.lineItems}>DELETE</button>
             </div>
           </div>
         ))}
