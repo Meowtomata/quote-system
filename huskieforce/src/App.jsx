@@ -345,7 +345,7 @@ function App() {
     }
   };
   
-  const handleSanctionQuote = async (quoteId) => {
+  const handleSanctionQuote = async (quoteId, email) => {
     try {
       const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
         method: 'PUT',
@@ -357,9 +357,8 @@ function App() {
         throw new Error("Failed to update status");
       }
   
-      // Optionally show confirmation
-      console.log("Quote status updated successfully!");
   
+      alert(`Quote has been emailed to ${email}`);
       await fetchQuotes();
   
     } catch (error) {
