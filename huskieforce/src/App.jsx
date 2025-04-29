@@ -63,7 +63,7 @@ function App() {
 }, []); // now re-runs when trigger changes
 
   
-  const handleEditQuote = async (quote, origin = "sanction") => {
+  const handleEditQuote = async (quote, origin) => {
     try {
       const response = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
       const { quote: base, lineItems, secretNotes } = response.data;
@@ -494,7 +494,7 @@ function App() {
   updateSecretNotes={updateSecretNotes}
   handleCreateQuote={handleCreateQuote}
   handleUpdateQuote={handleUpdateQuote}
-  isDate={isEditing}
+  isEditing={isEditing}
   setShowQuoteInterface={setShowQuoteInterface}
   isLoading={isLoading}
   disableEditingFields={disableEditingFields}

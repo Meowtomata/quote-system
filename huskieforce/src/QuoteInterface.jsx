@@ -26,11 +26,9 @@ function QuoteInterface({
     handleCreateQuote();
   };
 
-  console.log(isEditing);
   const handleCloseClick = () => {
     setShowQuoteInterface(false);
   };
-  console.log("Email in quoteInfo:", quoteInfo.email);
 
   return (
     <div>
