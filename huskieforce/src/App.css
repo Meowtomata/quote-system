@@ -348,7 +348,8 @@ select option {
 .add-item input[type="number"],
 .add-note input[type="text"],
 .description input,
-.login input {
+.login input,
+.quote-search input {
   background-color: #1e1e1e;
   color: #fff;
   border: 1px solid #555;
@@ -516,8 +517,7 @@ ul {
   margin: 5px;
   padding: 5px;
   overflow: hidden;
-  background-color: #2a2a2a;
-  border: 1px solid #888;
+  background-color: #3c3c3c;
 }
 
 li {
