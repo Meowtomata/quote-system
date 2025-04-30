@@ -26,7 +26,8 @@ function App() {
   const [disableEditingFields, setDisableEditingFields] = useState({
     email: false,
     lineItems: false,
-    notes: false
+    notes: false,
+    discount: false
   });
   
 
@@ -107,13 +108,13 @@ function App() {
       console.log("origin :", origin);
 
       if (origin === "finalized") {
-        setDisableEditingFields({ email: true, lineItems: false, notes: false });
+        setDisableEditingFields({ email: true, lineItems: false, notes: false, discount: false });
       } else if (origin === "sanctioned") {
-        setDisableEditingFields({ email: true, lineItems: true, notes: true });
+        setDisableEditingFields({ email: true, lineItems: true, notes: true, discount: false });
       } else if (origin === "ordered") {
-        setDisableEditingFields({ email: true, lineItems: true, notes: true });
+        setDisableEditingFields({ email: true, lineItems: true, notes: true, discount: true });
       } else {
-        setDisableEditingFields({ email: false, lineItems: false, notes: false });
+        setDisableEditingFields({ email: false, lineItems: false, notes: false, discount: false });
       }
 
     } catch (err) {
@@ -330,7 +331,7 @@ function App() {
     }));
 
     setIsEditing(false);
-    setDisableEditingFields({...false, ...false, ...false});
+    setDisableEditingFields({...false, ...false, ...false, ...false});
     setShowQuoteInterface(true);
   };
 
