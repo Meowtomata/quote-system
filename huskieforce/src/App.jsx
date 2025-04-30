@@ -21,6 +21,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false); // State to track loading
   const [error, setError] = useState(null);          // State to track errors
   const [previousView, setPreviousView] = useState("sanction"); // Default to sanction
+  
 
   const [disableEditingFields, setDisableEditingFields] = useState({
     email: false,
@@ -160,6 +161,115 @@ function App() {
     "commissionToInsert" : 0
   });
 
+    const addAssociate = async (associate) => {
+      try {
+        const res = await axios.post("http://localhost:3000/api/sales-associates", {
+          name: associate.name,
+          userId: associate.userId,
+          password: associate.password,
+          address: associate.address,
+          accumulatedCommission: associate.commission
+        });
+    
+        const newAssoc = {
+          SA_ID: res.data.salesAssociateId,
+          Name: associate.name,
+          User_ID: associate.userId,
+          Password: associate.password,
+          Address: associate.address,
+          Accumulated_Commission: parseFloat(associate.commission) ?? 0
+        };
+        
+        setSalesAssociates((prev) => [...prev, newAssoc]);
+      } catch (err) {
+        if (err.response?.status === 409) {
+          alert("User ID already exists. Please choose a different one.");
+        } else {
+          console.error("Add associate failed:", err);
+          alert("Failed to add associate.");
+        }
+      }
+    };
+    
+  const deleteAssociate = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/sales-associates/${id}`);
+      setSalesAssociates(prev => prev.filter(a => a.SA_ID !== id));
+    } catch (err) {
+      console.error("Delete failed:", err.response?.data || err.message);
+    }
+  };
+  
+  const updateAssociate = async (associate) => {
+    try {
+      await axios.put(`http://localhost:3000/api/sales-associates/${associate.SA_ID}`, associate);
+      setSalesAssociates(prev =>
+        prev.map((a) => (a.SA_ID === associate.SA_ID ? associate : a))
+      );
+    } catch (err) {
+      console.error("Update failed:", err.response?.data || err.message);
+    }
+  };
+  
+  
+  const onEditQuote = (quote) => {
+    setSelectedQuote(quote); // or whatever logic you use
+    setViewState("editQuote");
+  };
+  
+  /*const updateSalesAssociate = async (associate) => {
+    try {
+      await axios.put(`http://localhost:3000/api/sales-associates/${associate.SA_ID}`, {
+        name: associate.name,
+        userId: associate.userId,
+        password: associate.password,
+        address: associate.address,
+        accumulatedCommission: associate.commission
+      });
+  
+      const updated = {
+        SA_ID: associate.SA_ID,
+        Name: associate.name,
+        User_ID: associate.userId,
+        Password: associate.password,
+        Address: associate.address,
+        accumulatedCommission: parseFloat(associate.commission) ?? 0
+      };
+  
+      setSalesAssociates((prev) =>
+        prev.map((a) => (a.SA_ID === associate.SA_ID ? updated : a))
+      );
+    } catch (err) {
+      console.error("Update failed:", err.response?.data || err.message);
+    }
+  };
+  */
+  const fetchSalesAssociates = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/sales-associates");
+      setSalesAssociates(res.data);
+    } catch (err) {
+      console.error("Failed to fetch sales associates:", err);
+    }
+  };
+  
+
+  const updateSalesAssociate = async (associate) => {
+    try {
+      await axios.put(`http://localhost:3000/api/sales-associates/${associate.SA_ID}`, {
+        name: associate.name,
+        userId: associate.userId,
+        password: associate.password,
+        address: associate.address,
+        accumulatedCommission: parseFloat(associate.commission) ?? 0
+      });
+  
+      await fetchSalesAssociates();  // ✅ Refresh from DB
+    } catch (err) {
+      console.error("Update failed:", err.response?.data || err.message);
+    }
+  };
+  
 
   // when clicking add new quote, display quote interface
   const [showQuoteInterface, setShowQuoteInterface] = useState(false); 
@@ -549,13 +659,17 @@ function App() {
   />
 )}
    {viewState === "admin" && 
-        <AdminDashboard 
-            allQuotes={allQuotes} 
-            salesAssociates={salesAssociates}
-            customers={customers} 
-            allLineItems={allLineItems}
-            onEditQuote={handleEditQuote}
-        />
+        <AdminDashboard
+        allQuotes={allQuotes}
+        onEditQuote={onEditQuote}
+        customers={customers}
+        allLineItems={allLineItems}
+        salesAssociates={salesAssociates}
+        addAssociate={addAssociate}
+        updateAssociate={updateSalesAssociate}
+        deleteAssociate={deleteAssociate}
+      />
+      
       }
 
     <CopyRight />

@@ -1,22 +1,25 @@
 import React, { useState } from "react";
 import SalesAssociateForm from "./SalesAssociateForm";
 
-function SalesAssociateSection({salesAssociates}) {
+function SalesAssociateSection({salesAssociates, addAssociate, updateAssociate, deleteAssociate}) {
+  const [clearFormTrigger, setClearFormTrigger] = useState(0);
+
   const [editing, setEditing] = useState(null);
 
   const handleDelete = (id) => {
-    setAssociates(associates.filter((a) => a.id !== id));
+    deleteAssociate(id); 
   };
+  
 
   const handleSave = (record) => {
     if (editing) {
-      setAssociates(associates.map((a) => (a.id === record.id ? record : a)));
+      updateAssociate({ ...record, SA_ID: editing.SA_ID }); // keep the ID
       setEditing(null);
     } else {
-      setAssociates([...associates, { ...record, id: Date.now() }]);
+      addAssociate(record);
     }
   };
-
+  
   return (
     <div className="sales-associate-container">
       <h3>ASSOCIATES</h3>
@@ -45,7 +48,15 @@ function SalesAssociateSection({salesAssociates}) {
         </tbody>
       </table>
 
-      <SalesAssociateForm onSave={handleSave} initial={editing} />
+      <SalesAssociateForm 
+      onSave={handleSave}
+      initial={editing} 
+      editing={editing}
+      onCancel={() => {
+        setEditing(null);
+        setClearFormTrigger(prev => prev + 1); 
+      }}
+      clearFormTrigger={clearFormTrigger}       />
     </div>
   );
 }
