@@ -9,17 +9,20 @@ function SalesAssociateSection({salesAssociates, addAssociate, updateAssociate, 
   const handleDelete = (id) => {
     deleteAssociate(id); 
   };
-  
 
   const handleSave = (record) => {
+    console.log("--- RUNNING handleSave ---");
     if (editing) {
+      console.log("editing is true");
       updateAssociate({ ...record, SA_ID: editing.SA_ID }); // keep the ID
       setEditing(null);
     } else {
+      console.log("editing is false");
+      console.log(record);
       addAssociate(record);
     }
   };
-  
+
   return (
     <div className="sales-associate-container">
       <h3>ASSOCIATES</h3>

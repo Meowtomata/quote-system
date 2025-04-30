@@ -64,7 +64,8 @@ function App() {
     setError(null);     // Clear previous errors
     try {
       const response = await axios.get("http://localhost:3000/api/sales-associates");
-      setSalesAssociates(Array.isArray(response.data.data) ? response.data.data : []);
+      setSalesAssociates(Array.isArray(response.data) ? response.data : []);
+      console.log("Sales Associates after fetch:", response.data.data);
 
     } catch (err) {
       console.error("Failed to load associates:", err);
@@ -163,12 +164,13 @@ function App() {
 
     const addAssociate = async (associate) => {
       try {
+        console.log("--- RUNNING addAssociate ---");
         const res = await axios.post("http://localhost:3000/api/sales-associates", {
           name: associate.name,
           userId: associate.userId,
           password: associate.password,
           address: associate.address,
-          accumulatedCommission: associate.commission
+          accumulatedCommission: associate.accumulatedCommission
         });
     
         const newAssoc = {
@@ -177,7 +179,7 @@ function App() {
           User_ID: associate.userId,
           Password: associate.password,
           Address: associate.address,
-          Accumulated_Commission: parseFloat(associate.commission) ?? 0
+          Accumulated_Commission: parseFloat(associate.accumulatedCommission) ?? 0
         };
         
         setSalesAssociates((prev) => [...prev, newAssoc]);
@@ -202,6 +204,8 @@ function App() {
   
   const updateAssociate = async (associate) => {
     try {
+      console.log("--- RUNNING updateAssociate ---");
+      console.log("associate : ", associate);
       await axios.put(`http://localhost:3000/api/sales-associates/${associate.SA_ID}`, associate);
       setSalesAssociates(prev =>
         prev.map((a) => (a.SA_ID === associate.SA_ID ? associate : a))
@@ -244,15 +248,6 @@ function App() {
     }
   };
   */
-  const fetchSalesAssociates = async () => {
-    try {
-      const res = await axios.get("http://localhost:3000/api/sales-associates");
-      setSalesAssociates(res.data);
-    } catch (err) {
-      console.error("Failed to fetch sales associates:", err);
-    }
-  };
-  
 
   const updateSalesAssociate = async (associate) => {
     try {
@@ -261,10 +256,10 @@ function App() {
         userId: associate.userId,
         password: associate.password,
         address: associate.address,
-        accumulatedCommission: parseFloat(associate.commission) ?? 0
+        accumulatedCommission: parseFloat(associate.accumulatedCommission) ?? 0
       });
   
-      await fetchSalesAssociates();  // ✅ Refresh from DB
+      await fetchAssociates();  // ✅ Refresh from DB
     } catch (err) {
       console.error("Update failed:", err.response?.data || err.message);
     }
@@ -509,45 +504,6 @@ function App() {
   
     } catch (error) {
       console.error("Error sanctioning quote:", error);
-    }
-  };
-  
-  
-
-  const handleCreateAssociate = async () => {
-    console.log("--- handleCreateAssociate Executing ---");
-    const payload = {
-        "name" : 'Steve',
-        "userId" : 'Mine',
-        "password" : 'craft',
-        "address" : 'Overworld',
-        "commissionToInsert" : 10000
-        };
-
-    console.log("salesAssociateInfo at execution time:", JSON.stringify(payload));
-
-    setIsLoading(true);
-
-    /*
-    const payload = {
-      name: salesAssociateInfo.name,
-      userId: salesAssociateInfo.userID,
-      password: salesAssociateInfo.password,
-      address: salesAssociateInfo.address,
-      commissionToInsert: salesAssociateInfo.commisionToInsert
-    };
-    */
-
-    console.log("Payload being sent:", JSON.stringify(payload));
-
-    try {
-      const response = await axios.post('http://localhost:3000/api/sales-associates', payload);
-    } catch (err) {
-      // ... error handling ... 
-       console.error("Error fetching data:", err);
-       setError(err.message || "Failed to send salesAssociateInfo."); // Set error message
-    } finally {
-       setIsLoading(false);
     }
   };
 

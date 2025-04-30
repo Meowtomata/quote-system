@@ -384,37 +384,6 @@ app.put("/api/sales-associates/:id", (req, res) => {
     SET Name = ?, User_ID = ?, Password = ?, Address = ?, Accumulated_Commission = ?
     WHERE SA_ID = ?
   `;
-  const params = [name, userId, password, address, accumulatedCommission, id];
-
-  db.run(sql, params, function (err) {
-    if (err) {
-      console.error("SQLite Update Error:", err.message);
-      return res
-        .status(500)
-        .json({ error: "Failed to update associate", details: err.message });
-    }
-
-    if (this.changes === 0) {
-      return res.status(404).json({ error: "Associate not found" });
-    }
-
-    res.status(200).json({ message: "Associate updated", updatedId: id });
-  });
-});
-
-app.put("/api/sales-associates/:id", (req, res) => {
-  const id = req.params.id;
-  const { name, userId, password, address, accumulatedCommission } = req.body;
-
-  if (!name || !userId || !password || !address) {
-    return res.status(400).json({ error: "Missing required fields." });
-  }
-
-  const sql = `
-    UPDATE Sales_Associate
-    SET Name = ?, User_ID = ?, Password = ?, Address = ?, Accumulated_Commission = ?
-    WHERE SA_ID = ?
-  `;
   const params = [
     name,
     userId,
