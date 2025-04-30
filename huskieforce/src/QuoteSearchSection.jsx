@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 
-
-function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems }) {
-  const [filters, setFilters] = useState({ status: "", associate: "", customer: "" });
+function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems, salesAssociates}) {
+  const [filters, setFilters] = useState({ status: "", associate: "", customer: "", start_date: "",end_date: "" });
 
   console.log("Value of allQuotes:", allQuotes);
 
   const filtered = allQuotes.filter((q) =>
-    (!filters.status || q.Status === filters.status) // &&
-    // (!filters.associate || q.SA_ID.includes(filters.associate)) &&
-    // (!filters.customer || q.CU_ID.toLowerCase().includes(filters.customer.toLowerCase()))
+    (!filters.status || q.Status === filters.status) &&
+    (!filters.start_date || q.Created_Date >= filters.start_date) &&
+    (!filters.end_date || q.Created_Date <= filters.end_date ) &&
+    (!filters.associate || q.SA_ID?.toString() === filters.associate)
   );
 
   return (
@@ -22,10 +22,26 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems }) 
         value={filters.customer}
         onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
       />
-      <input
-        placeholder="ASSOCIATE:"
+      <select 
         value={filters.associate}
-        onChange={(e) => setFilters({ ...filters, associate: e.target.value })}
+        onChange={(e) => setFilters({ ...filters, associate: e.target.value })}>
+        <option value="">- Sale associate -</option>
+        {salesAssociates.map((a)=>(
+          <option key={a.User_ID} value={a.User_ID}>
+            {a.Name}
+          </option>
+        ))}
+      </select>
+      <input
+          type="date"
+          // need to add labels for this
+          value={filters.start_date}
+          onChange={(e) => setFilters({ ...filters, start_date: e.target.value })}
+      />
+      <input
+          type="date"
+          value={filters.end_date}
+          onChange={(e) => setFilters({ ...filters, end_date: e.target.value })}
       />
       <select onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
         <option value="">- STATUS -</option>

@@ -42,7 +42,7 @@ function AdminDashboard({
           onEditQuote={onEditQuote}
           customers={customers}
           allLineItems={allLineItems}
-
+          salesAssociates={salesAssociates}
         />
 
       }
