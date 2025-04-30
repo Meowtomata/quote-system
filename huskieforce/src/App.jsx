@@ -540,6 +540,7 @@ function App() {
   return(
     <div className="App-container">
 
+      <Header />
     {showQuoteInterface && (
       <div className="overlay">
             <div className="modal-content">
@@ -611,7 +612,9 @@ function App() {
             {viewState !== "login" && (
               <div>
                 <ul>
-                  <li><p><b>LOGGED IN AS: </b></p></li>
+                  <li><p><b>LOGGED IN AS: {
+                      currentSalesAssociateName ? currentSalesAssociateName.Name : 'Loading...'
+                      }</b></p></li>
                   <button className="LogOut" onClick={handleLogOut}>LOG OUT</button>
                 </ul>
               </div>
