@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Routes, Route, Link } from 'react-router-dom'; // Import necessary components
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import Header from "./HuskieForceHeader.jsx"
@@ -538,90 +539,40 @@ function App() {
 
   return(
     <div className="App-container">
-    {viewState !== "login" &&
-        <div>
-          <ul>
-      <li><p><b>LOGGED IN AS: </b></p></li>
-      <button className="LogOut" onClick={handleLogOut}>LOG OUT</button>
-      </ul>
-      <Header />
-      <Buttons setViewState={setViewState} />
+
+    {showQuoteInterface && (
+      <div className="overlay">
+            <div className="modal-content">
+      <QuoteInterface
+        quoteInfo={quoteInfo}
+        updateQuoteField={updateQuoteField}
+        updateLineItems={updateLineItems}
+        updateSecretNotes={updateSecretNotes}
+        handleCreateQuote={handleCreateQuote}
+        handleUpdateQuote={handleUpdateQuote}
+        isEditing={isEditing}
+        setShowQuoteInterface={setShowQuoteInterface}
+        isLoading={isLoading}
+        disableEditingFields={disableEditingFields}
+        setDisableEditingFields={setDisableEditingFields}
+        />
       </div>
-    }
-      {viewState === "login" &&
-      <LoginInterface 
-          salesAssociates={salesAssociates}
-          setViewState={setViewState}
-          setSalesAssociateID={setLoggedInUserID}
-        />
-      }
-      {viewState === "draft" && 
-          <div>
-          <CustomerSelector 
-              customers={customers} 
-              selectedID={quoteInfo.customerID}
-              setCustomerID={(value) => updateQuoteField('customerID', value)}
-              onAddNewQuote={handleAddNewQuoteClick}
-              />
-          <DraftQuotesPage 
-            onEditQuote={handleEditQuote}
-            onFinalizeQuote={handleFinalizeQuote}
-            draftQuotes={draftedQuotes}
-            allLineItems={allLineItems}
-            customers={customers}
-          />
-          </div>
-        }
-      {showQuoteInterface && <div className="overlay">   <QuoteInterface
-                // Pass the data object
-                quoteInfo={quoteInfo}
-                // Pass the specific update functions
-                updateQuoteField={updateQuoteField}
-                updateLineItems={updateLineItems}
-                updateSecretNotes={updateSecretNotes}
-                handleCreateQuote={handleCreateQuote}
-                setShowQuoteInterface={setShowQuoteInterface}
-                isEditing={isEditing}
-                isLoading={isLoading}
-            />
-        </div>}
-      {viewState === "sanction" && (
-  <SanctionQuotesPage 
-          onEditQuote={handleEditQuote} 
-          onSanctionQuote={handleSanctionQuote}
-          finalizedQuotes={finalizedQuotes}
-        />
-)}
+      </div>
+    )}
 
-{showQuoteInterface && (
-  <div className="overlay">
-        <div className="modal-content">
-    <QuoteInterface
-  quoteInfo={quoteInfo}
-  updateQuoteField={updateQuoteField}
-  updateLineItems={updateLineItems}
-  updateSecretNotes={updateSecretNotes}
-  handleCreateQuote={handleCreateQuote}
-  handleUpdateQuote={handleUpdateQuote}
-  isEditing={isEditing}
-  setShowQuoteInterface={setShowQuoteInterface}
-  isLoading={isLoading}
-  disableEditingFields={disableEditingFields}
-  setDisableEditingFields={setDisableEditingFields}
-/>
-  </div>
-  </div>
-)}
-
-
-{viewState === "order" && (
-  <OrderedQuotesPage
-    onEditQuote={handleEditQuote}
-    onOrderQuote={handleOrderQuote} 
-    sanctionedQuotes={sanctionedQuotes}
-  />
-)}
-   {viewState === "admin" && 
+    <div>
+      <nav>
+        <ul>
+          <li>
+            <Link to="/">Home</Link> {/* Link to the Home page */}
+          </li>
+          <li>
+            <Link to="/drafts">About</Link> {/* Link to the About page */}
+          </li>
+        </ul>
+      </nav>
+      <Routes>
+        <Route path="/admin" element={
         <AdminDashboard
         allQuotes={allQuotes}
         setShowQuoteInterface={setShowQuoteInterface}
@@ -633,12 +584,75 @@ function App() {
         updateAssociate={updateSalesAssociate}
         deleteAssociate={deleteAssociate}
       />
-      
-      }
+
+        } />
+        <Route path="/headquarters" element={
+          <div>
+          <Buttons setViewState={setViewState}/>
+          {viewState == "sanction" && 
+          <SanctionQuotesPage 
+            onEditQuote={handleEditQuote} 
+            onSanctionQuote={handleSanctionQuote}
+            finalizedQuotes={finalizedQuotes}
+          />
+              }
+          {viewState == "order" && 
+          <OrderedQuotesPage
+            onEditQuote={handleEditQuote}
+            onOrderQuote={handleOrderQuote} 
+            sanctionedQuotes={sanctionedQuotes}
+          />
+              }
+
+          </div>
+          } />
+        <Route path="/" element={
+          <div>
+            {viewState !== "login" && (
+              <div>
+                <ul>
+                  <li><p><b>LOGGED IN AS: </b></p></li>
+                  <button className="LogOut" onClick={handleLogOut}>LOG OUT</button>
+                </ul>
+              </div>
+            )}
+
+            {viewState === "login" && (
+              <LoginInterface
+                salesAssociates={salesAssociates}
+                setViewState={setViewState}
+                setSalesAssociateID={setLoggedInUserID}
+              />
+            )}
+
+            {viewState === "draft" && (
+              <div>
+                <CustomerSelector
+                  customers={customers}
+                  selectedID={quoteInfo.customerID}
+                  setCustomerID={(value) => updateQuoteField('customerID', value)}
+                  onAddNewQuote={handleAddNewQuoteClick}
+                />
+                <DraftQuotesPage
+                  onEditQuote={handleEditQuote}
+                  onFinalizeQuote={handleFinalizeQuote}
+                  draftQuotes={draftedQuotes}
+                  allLineItems={allLineItems}
+                  customers={customers}
+                />
+              </div>
+            )}
+          </div>
+        } />
+      </Routes>
+ 
+    </div>
 
     <CopyRight />
     </div>
+
   );
+
 }
 
 export default App;

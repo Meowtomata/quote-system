@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const DraftQuotesPage = ({ onEditQuote, onFinalizeQuote, draftQuotes, allLineItems, customers }) => {
+const DraftQuotesPage = ({ onEditQuote, onFinalizeQuote, draftQuotes, allLineItems, customers, handleLogOut }) => {
   return (
     <div className="quote-list-container">
       <h2>ORDER</h2>
