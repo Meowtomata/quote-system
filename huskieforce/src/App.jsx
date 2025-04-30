@@ -479,6 +479,12 @@ function App() {
 
       alert(`Quote has been processed for ${fulfilled_date}\nComission of ${commissionAmount} has been credited to ...`);
 
+      const setQuoteStatus = await fetch(`http://localhost:3000/api/quotes/${quote.QU_ID}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newStatus: "Ordered" }) 
+      });
+
       await fetchAssociates();
       await fetchQuotes();
     } catch (error) {
