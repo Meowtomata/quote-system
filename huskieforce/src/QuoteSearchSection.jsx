@@ -15,14 +15,15 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems }) 
   return (
 
     <div className="quote-list-container">
-      <h2>Quote Search</h2>
+      <h3>QUOTE SEARCH</h3>
+      <div className="quote-search">
       <input
         placeholder="CUSTOMER:"
         value={filters.customer}
         onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
       />
       <input
-        placeholder="SALES ASSOCIATE:"
+        placeholder="ASSOCIATE:"
         value={filters.associate}
         onChange={(e) => setFilters({ ...filters, associate: e.target.value })}
       />
@@ -32,14 +33,15 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems }) 
         <option value="Sanctioned">SANCTIONED</option>
         <option value="Ordered">ORDERED</option>
       </select>
+      </div>
       <table className="quote-table">
         <thead>
           <tr>
             <th>QUOTE ID</th>
-            <th>Customer Name</th>
+            <th>CUSTOMER NAME</th>
             <th>ASSOC. ID</th>
             <th>STATUS</th>
-            <th>Final Price</th>
+            <th>FINAL PRICE</th>
             <th>CREATED DATE</th>
             <th>ACTION</th>
           </tr>
@@ -71,7 +73,7 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems }) 
                 <td>{quote.Created_Date ?quote.Created_Date : 'N/A'}</td>
                 <td>
                   <div className="button-group">
-                    <button className="Edit" onClick={() => onEditQuote(quote, "draft")}>View</button>
+                    <button className="Edit" onClick={() => onEditQuote(quote, "draft")}>VIEW</button>
                   </div>
                 </td>
               </tr>

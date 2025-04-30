@@ -44,7 +44,7 @@ const DraftQuotesPage = ({ onEditQuote, onFinalizeQuote, draftQuotes, allLineIte
                 <td>
                   <div className="button-group">
                     <button className="Edit" onClick={() => onEditQuote(quote, "draft")}>EDIT</button>
-                    <button className="Order" onClick={() => onFinalizeQuote(quote.QU_ID)}>Finalize Quote</button>
+                    <button className="Order" onClick={() => onFinalizeQuote(quote.QU_ID)}>FINALIZE</button>
                   </div>
                 </td>
               </tr>

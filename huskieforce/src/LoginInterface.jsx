@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import logo from './assets/huskieforce.png'
+
 
 const LoginInterface = ({ salesAssociates, setViewState, setSalesAssociateID }) => {
   const [username, setUsername] = useState('');
@@ -35,11 +37,18 @@ const LoginInterface = ({ salesAssociates, setViewState, setSalesAssociateID }) 
 
   return (
     <div>
-      <h1>Login</h1>
+    <div className="huskieforceLogo">
+        <img src={logo} />
+        </div>
+    <div className="login-container">
+      <h1>LOGIN</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>} {/*Display errors */}
       <form onSubmit={handleSubmit}>
+      <div className="login">
         <label>
-          Username:
+          <b>
+          USERNAME:
+          </b>
           <input
             type="text"
             value={username}
@@ -48,7 +57,9 @@ const LoginInterface = ({ salesAssociates, setViewState, setSalesAssociateID }) 
           />
         </label><br/>
         <label>
-          Password:
+          <b>
+          PASSWORD:
+          </b>
           <input
             type="password"
             value={password}
@@ -56,8 +67,12 @@ const LoginInterface = ({ salesAssociates, setViewState, setSalesAssociateID }) 
             required
           />
         </label><br/>
-        <button type="submit">Login</button>
+        </div>
+        <div className="button-group">
+        <button className="Login" type="submit">LOGIN</button>
+        </div>
       </form>
+    </div>
     </div>
   );
 };

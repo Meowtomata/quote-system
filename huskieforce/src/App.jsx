@@ -432,8 +432,10 @@ function App() {
     <div className="App-container">
     {viewState !== "login" &&
         <div>
-      <p>Logged in as: {currentSalesAssociateName.Name}</p>
-      <button onClick={handleLogOut}>Log Out</button>
+          <ul>
+      <li><p><b>LOGGED IN AS: {currentSalesAssociateName.Name}</b></p></li>
+      <button className="LogOut" onClick={handleLogOut}>LOG OUT</button>
+      </ul>
       <Header />
       <Buttons setViewState={setViewState} />
       </div>
