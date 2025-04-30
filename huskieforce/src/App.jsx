@@ -11,6 +11,7 @@ import CustomerSelector from './CustomerSelector.jsx';
 import './App.css';
 import LoginInterface from "./LoginInterface.jsx";
 import AdminDashboard from "./AdminDashboard.jsx";
+import LandingPage from "./LandingPage"; 
 
 function App() {
   // customer array will be retrieved from legacy database
@@ -536,6 +537,7 @@ function App() {
     <div>
       <Routes>
 
+        <Route path="/" element={<LandingPage />} />
         <Route path="/administrator" element={
         <AdminDashboard
         allQuotes={allQuotes}
