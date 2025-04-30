@@ -537,7 +537,7 @@ function App() {
     <div>
       <Routes>
 
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage setViewState={setViewState} />} />
         <Route path="/administrator" element={
         <AdminDashboard
         allQuotes={allQuotes}
