@@ -11,6 +11,7 @@ import CustomerSelector from './CustomerSelector.jsx';
 import './App.css';
 import LoginInterface from "./LoginInterface.jsx";
 import AdminDashboard from "./AdminDashboard.jsx";
+import LandingPage from "./LandingPage"; 
 
 function App() {
   // customer array will be retrieved from legacy database
@@ -19,7 +20,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false); // State to track loading
   const [error, setError] = useState(null);          // State to track errors
   const [previousView, setPreviousView] = useState("sanction"); // Default to sanction
-  
+
 
   const [disableEditingFields, setDisableEditingFields] = useState({
     email: false,
@@ -27,9 +28,8 @@ function App() {
     notes: false,
     discount: false
   });
-  
 
-  // Bleon's changes to App.jsx
+
   const [viewState, setViewState] = useState("login");
   const [selectedQuote, setSelectedQuote] = useState(null);
 
@@ -79,13 +79,13 @@ function App() {
     fetchQuotes(); // Call the reusable function on mount
 }, []); // now re-runs when trigger changes
 
-  
+
   const handleEditQuote = async (quote) => {
     try {
       console.log("--- RUNNING handleEditQuote ---");
       const response = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
       const { quote: base, lineItems, secretNotes } = response.data;
-  
+
       const mappedQuote = {
         QU_ID: quote.QU_ID,
         customerID: base.CU_ID,
@@ -99,7 +99,7 @@ function App() {
         discountAmount: parseFloat(base.Discount_Amount) || 0,
         isPercentage: !!base.isPercentage
       };
-  
+
       setQuoteInfo(mappedQuote);
       setIsEditing(true);
       setShowQuoteInterface(true);
@@ -156,14 +156,6 @@ function App() {
     "isPercentage" : true,
     });
 
-  const [salesAssociateInfo, setSalesAssociateInfo] = useState({
-    "name" : '',
-    "userID" : '',
-    "password" : '',
-    "address" : '',
-    "commissionToInsert" : 0
-  });
-
     const addAssociate = async (associate) => {
       try {
         console.log("--- RUNNING addAssociate ---");
@@ -217,7 +209,7 @@ function App() {
     }
   };
 
-  /*const updateSalesAssociate = async (associate) => {
+  const updateSalesAssociate = async (associate) => {
     try {
       await axios.put(`http://localhost:3000/api/sales-associates/${associate.SA_ID}`, {
         name: associate.name,
@@ -243,24 +235,6 @@ function App() {
       console.error("Update failed:", err.response?.data || err.message);
     }
   };
-  */
-
-  const updateSalesAssociate = async (associate) => {
-    try {
-      await axios.put(`http://localhost:3000/api/sales-associates/${associate.SA_ID}`, {
-        name: associate.name,
-        userId: associate.userId,
-        password: associate.password,
-        address: associate.address,
-        accumulatedCommission: parseFloat(associate.accumulatedCommission) ?? 0
-      });
-  
-      await fetchAssociates();  // ✅ Refresh from DB
-    } catch (err) {
-      console.error("Update failed:", err.response?.data || err.message);
-    }
-  };
-  
 
   // when clicking add new quote, display quote interface
   const [showQuoteInterface, setShowQuoteInterface] = useState(false); 
@@ -562,7 +536,9 @@ function App() {
 
     <div>
       <Routes>
-        <Route path="/admin" element={
+
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/administrator" element={
         <AdminDashboard
         allQuotes={allQuotes}
         setShowQuoteInterface={setShowQuoteInterface}
@@ -579,7 +555,7 @@ function App() {
         <Route path="/headquarters" element={
           <div>
           <Buttons setViewState={setViewState}/>
-          {viewState == "sanction" && 
+          {viewState != "order" &&  // !order is janky, but it's to make sanction default
           <QuotesList 
             onEditQuote={handleEditQuote} 
             onUpdateStatus={handleSanctionQuote}
@@ -602,7 +578,7 @@ function App() {
 
           </div>
           } />
-        <Route path="/" element={
+        <Route path="/sales-associate" element={
           <div>
             {viewState !== "login" && (
               <div>

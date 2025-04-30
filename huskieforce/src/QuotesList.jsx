@@ -5,7 +5,7 @@ const QuotesList = ({ onEditQuote, onUpdateStatus, quotes, allLineItems, custome
 
   return (
     <div className="quote-list-container">
-      <h2>ORDER</h2>
+      <h2>QUOTES</h2>
       <table className="quote-table">
         <thead>
           <tr>
