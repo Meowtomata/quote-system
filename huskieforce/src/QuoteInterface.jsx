@@ -13,7 +13,8 @@ function QuoteInterface({
   isEditing,
   setShowQuoteInterface,
   isLoading,
-  disableEditingFields={}
+  disableEditingFields={},
+  setDisableEditingFields,
 }) {
 
   const handleSubmitClick = (event) => {
@@ -62,6 +63,7 @@ function QuoteInterface({
         isPercentage={quoteInfo.isPercentage}
         setDiscountValue={(value) => updateQuoteField('discountAmount', value)}
         setIsPercentage={(value) => updateQuoteField('isPercentage', value)}
+        disableEditing={disableEditingFields.discount}
       />
 
 <div className="button-group">

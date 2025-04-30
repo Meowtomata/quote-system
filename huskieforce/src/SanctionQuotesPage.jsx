@@ -16,6 +16,7 @@ const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, finalizedQuotes }) =
             <th>CUSTOMER ID</th>
             <th>SALES ASSOC. ID</th>
             <th>STATUS</th>
+            <th>Email</th>
             <th>DISCOUNT</th>
             <th>CREATED DATE</th>
             <th>ACTION</th>
@@ -28,6 +29,7 @@ const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, finalizedQuotes }) =
               <td>{quote.CU_ID}</td>
               <td>{quote.SA_ID}</td>
               <td>{quote.Status || 'Draft'}</td>
+              <td>{quote.Email}</td>
               <td>
                 {quote.Discount_Amount != null ? (
                   quote.isPercentage
@@ -37,8 +39,8 @@ const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, finalizedQuotes }) =
               <td>{quote.Created_Date ? new Date(quote.Created_Date).toLocaleDateString() : 'N/A'}</td>
               <td>
               <div className="button-group">
-              <button className="Edit" onClick={() => onEditQuote(quote, "sanction", true)}>EDIT</button>
-                <button className="Sanction" onClick={() => onSanctionQuote(quote.QU_ID)}>SANCTION</button>
+              <button className="Edit" onClick={() => onEditQuote(quote, "finalized")}>EDIT</button>
+                <button className="Sanction" onClick={() => onSanctionQuote(quote.QU_ID, quote.Email)}>SANCTION</button>
               </div>
               </td>
             </tr>

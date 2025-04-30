@@ -384,37 +384,6 @@ app.put("/api/sales-associates/:id", (req, res) => {
     SET Name = ?, User_ID = ?, Password = ?, Address = ?, Accumulated_Commission = ?
     WHERE SA_ID = ?
   `;
-  const params = [name, userId, password, address, accumulatedCommission, id];
-
-  db.run(sql, params, function (err) {
-    if (err) {
-      console.error("SQLite Update Error:", err.message);
-      return res
-        .status(500)
-        .json({ error: "Failed to update associate", details: err.message });
-    }
-
-    if (this.changes === 0) {
-      return res.status(404).json({ error: "Associate not found" });
-    }
-
-    res.status(200).json({ message: "Associate updated", updatedId: id });
-  });
-});
-
-app.put("/api/sales-associates/:id", (req, res) => {
-  const id = req.params.id;
-  const { name, userId, password, address, accumulatedCommission } = req.body;
-
-  if (!name || !userId || !password || !address) {
-    return res.status(400).json({ error: "Missing required fields." });
-  }
-
-  const sql = `
-    UPDATE Sales_Associate
-    SET Name = ?, User_ID = ?, Password = ?, Address = ?, Accumulated_Commission = ?
-    WHERE SA_ID = ?
-  `;
   const params = [
     name,
     userId,
@@ -505,6 +474,66 @@ app.post("/api/quotes", (req, res) => {
     });
   });
 });
+
+
+// PUT Endpoint to update associate accumulated commission 
+app.put("/api/sales-associate/:id/commission", (req, res) => {
+  const associateID = req.params.id;
+  const { commission } = req.body;
+
+  if (!db) {
+    return res.status(503).json({ error: "SQLite database not ready" });
+  }
+
+  // 1. Retrieve the current accumulated commission
+  db.get(
+    "SELECT Accumulated_Commission FROM Sales_Associate WHERE SA_ID = ?",
+    [associateID],
+    (err, row) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Failed to retrieve current commission amount",
+          details: err.message,
+        });
+      }
+
+      if (!row) {
+        return res.status(404).json({ error: "No sales associate found with that ID" });
+      }
+
+      const currentCommission = row.Accumulated_Commission || 0; // Default to 0 if null
+
+      // 2. Calculate the new accumulated commission
+      const newAccumulatedCommission = parseFloat(currentCommission) + parseFloat(commission);
+
+      // 3. Update the database with the new total
+      db.run(
+        "UPDATE Sales_Associate SET Accumulated_Commission = ? WHERE SA_ID = ?",
+        [newAccumulatedCommission, associateID],
+        function (err) {
+          if (err) {
+            return res.status(500).json({
+              error: "Failed to update commission amount",
+              details: err.message,
+            });
+          }
+
+          if (this.changes === 0) {
+            return res.status(404).json({ error: "No sales associate found with that ID (update failed)" });
+          }
+
+          res.status(200).json({
+            message: "Commission amount updated successfully",
+            updatedAssociateId: associateID,
+            newAccumulatedCommission: newAccumulatedCommission,
+          });
+        }
+      );
+    }
+  );
+});
+
+
 
 // PUT Endpoint to update quote status (e.g., from Draft to Sanctioned or Ordered)
 app.put("/api/quotes/:id/status", (req, res) => {

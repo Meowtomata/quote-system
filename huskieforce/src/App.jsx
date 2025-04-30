@@ -26,7 +26,8 @@ function App() {
   const [disableEditingFields, setDisableEditingFields] = useState({
     email: false,
     lineItems: false,
-    notes: false
+    notes: false,
+    discount: false
   });
   
 
@@ -58,6 +59,23 @@ function App() {
       setIsLoading(false); // Hide loading indicator
     }
   };
+  
+  const fetchAssociates = async () => {
+    setIsLoading(true); // Show loading indicator
+    setError(null);     // Clear previous errors
+    try {
+      const response = await axios.get("http://localhost:3000/api/sales-associates");
+      setSalesAssociates(Array.isArray(response.data) ? response.data : []);
+      console.log("Sales Associates after fetch:", response.data.data);
+
+    } catch (err) {
+      console.error("Failed to load associates:", err);
+      setError("Failed to load associates.");
+      setSalesAssociates([]); // Clear on error
+    } finally {
+      setIsLoading(false); // Hide loading indicator
+    }
+  };
 
   useEffect(() => {
     fetchQuotes(); // Call the reusable function on mount
@@ -66,6 +84,7 @@ function App() {
   
   const handleEditQuote = async (quote, origin) => {
     try {
+      console.log("--- RUNNING handleEditQuote ---");
       const response = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
       const { quote: base, lineItems, secretNotes } = response.data;
   
@@ -86,13 +105,16 @@ function App() {
       setQuoteInfo(mappedQuote);
       setIsEditing(true);
       setShowQuoteInterface(true);
+      console.log("origin :", origin);
 
-      if (origin === "sanction") {
-        setDisableEditingFields({ email: true, lineItems: false, notes: false });
-      } else if (origin === "order") {
-        setDisableEditingFields({ email: true, lineItems: true, notes: true });
+      if (origin === "finalized") {
+        setDisableEditingFields({ email: true, lineItems: false, notes: false, discount: false });
+      } else if (origin === "sanctioned") {
+        setDisableEditingFields({ email: true, lineItems: true, notes: true, discount: false });
+      } else if (origin === "ordered") {
+        setDisableEditingFields({ email: true, lineItems: true, notes: true, discount: true });
       } else {
-        setDisableEditingFields({ email: false, lineItems: false, notes: false });
+        setDisableEditingFields({ email: false, lineItems: false, notes: false, discount: false });
       }
 
     } catch (err) {
@@ -147,12 +169,13 @@ function App() {
 
     const addAssociate = async (associate) => {
       try {
+        console.log("--- RUNNING addAssociate ---");
         const res = await axios.post("http://localhost:3000/api/sales-associates", {
           name: associate.name,
           userId: associate.userId,
           password: associate.password,
           address: associate.address,
-          accumulatedCommission: associate.commission
+          accumulatedCommission: associate.accumulatedCommission
         });
     
         const newAssoc = {
@@ -161,7 +184,7 @@ function App() {
           User_ID: associate.userId,
           Password: associate.password,
           Address: associate.address,
-          Accumulated_Commission: parseFloat(associate.commission) ?? 0
+          Accumulated_Commission: parseFloat(associate.accumulatedCommission) ?? 0
         };
         
         setSalesAssociates((prev) => [...prev, newAssoc]);
@@ -186,6 +209,8 @@ function App() {
   
   const updateAssociate = async (associate) => {
     try {
+      console.log("--- RUNNING updateAssociate ---");
+      console.log("associate : ", associate);
       await axios.put(`http://localhost:3000/api/sales-associates/${associate.SA_ID}`, associate);
       setSalesAssociates(prev =>
         prev.map((a) => (a.SA_ID === associate.SA_ID ? associate : a))
@@ -194,13 +219,7 @@ function App() {
       console.error("Update failed:", err.response?.data || err.message);
     }
   };
-  
-  
-  const onEditQuote = (quote) => {
-    setSelectedQuote(quote); // or whatever logic you use
-    setViewState("editQuote");
-  };
-  
+
   /*const updateSalesAssociate = async (associate) => {
     try {
       await axios.put(`http://localhost:3000/api/sales-associates/${associate.SA_ID}`, {
@@ -228,15 +247,6 @@ function App() {
     }
   };
   */
-  const fetchSalesAssociates = async () => {
-    try {
-      const res = await axios.get("http://localhost:3000/api/sales-associates");
-      setSalesAssociates(res.data);
-    } catch (err) {
-      console.error("Failed to fetch sales associates:", err);
-    }
-  };
-  
 
   const updateSalesAssociate = async (associate) => {
     try {
@@ -245,10 +255,10 @@ function App() {
         userId: associate.userId,
         password: associate.password,
         address: associate.address,
-        accumulatedCommission: parseFloat(associate.commission) ?? 0
+        accumulatedCommission: parseFloat(associate.accumulatedCommission) ?? 0
       });
   
-      await fetchSalesAssociates();  // ✅ Refresh from DB
+      await fetchAssociates();  // ✅ Refresh from DB
     } catch (err) {
       console.error("Update failed:", err.response?.data || err.message);
     }
@@ -321,6 +331,7 @@ function App() {
     }));
 
     setIsEditing(false);
+    setDisableEditingFields({...false, ...false, ...false, ...false});
     setShowQuoteInterface(true);
   };
 
@@ -428,34 +439,60 @@ function App() {
   const handleOrderQuote = async (quote) => {
     try {
       console.log(quote);
-      const response = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
-      const { quote: base, lineItems } = response.data;
+      const retrieveQuoteDetails = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
+      const { quote: base, lineItems } = retrieveQuoteDetails.data;
 
       const customer = customers.find(customer => customer.id === base.CU_ID);
+      const totalPrice = lineItems.reduce((total, item) => total + item.Price, 0);
+
+      let finalPrice = totalPrice;
+      if (quote.Discount_Amount != null) {
+        if (quote.isPercentage) {
+          finalPrice = totalPrice - (totalPrice * (parseFloat(quote.Discount_Amount) / 100));
+        } else {
+          finalPrice = totalPrice - parseFloat(quote.Discount_Amount);
+        }
+      }
+
+      const fulfilled_date = new Date();
 
       const payload = {
         order: uuidv4(),
         custid: base.CU_ID,
         associate: base.SA_ID, 
-        amount: lineItems.reduce((total, item) => total + item.Price, 0),
+        amount: totalPrice, 
         name: customer.name,
-        processDay: new Date(),
-        commission: "106",
+        processDay: fulfilled_date, 
       };
-      console.log(response);
 
       console.log("Payload being sent:", JSON.stringify(payload));
 
-      const response2 = await axios.post("https://blitz.cs.niu.edu/purchaseorder", payload);
-      // console.log(response2);
+      const sendOrderData = await axios.post("https://blitz.cs.niu.edu/purchaseorder", payload);
 
+      const commissionAmount = parseFloat(sendOrderData.data.commission) / 100 * finalPrice;
+
+      const response = await fetch(`http://localhost:3000/api/sales-associate/${base.SA_ID}/commission`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commission: commissionAmount }) 
+      });
+
+      alert(`Quote has been processed for ${fulfilled_date}\nComission of ${commissionAmount} has been credited to ...`);
+
+      const setQuoteStatus = await fetch(`http://localhost:3000/api/quotes/${quote.QU_ID}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newStatus: "Ordered" }) 
+      });
+
+      await fetchAssociates();
       await fetchQuotes();
     } catch (error) {
       console.error("❌ Error updating quote to ordered:", error);
     }
   };
   
-  const handleSanctionQuote = async (quoteId) => {
+  const handleSanctionQuote = async (quoteId, email) => {
     try {
       const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
         method: 'PUT',
@@ -467,52 +504,12 @@ function App() {
         throw new Error("Failed to update status");
       }
   
-      // Optionally show confirmation
-      console.log("Quote status updated successfully!");
   
+      alert(`Quote has been emailed to ${email}`);
       await fetchQuotes();
   
     } catch (error) {
       console.error("Error sanctioning quote:", error);
-    }
-  };
-  
-  
-
-  const handleCreateAssociate = async () => {
-    console.log("--- handleCreateAssociate Executing ---");
-    const payload = {
-        "name" : 'Steve',
-        "userId" : 'Mine',
-        "password" : 'craft',
-        "address" : 'Overworld',
-        "commissionToInsert" : 10000
-        };
-
-    console.log("salesAssociateInfo at execution time:", JSON.stringify(payload));
-
-    setIsLoading(true);
-
-    /*
-    const payload = {
-      name: salesAssociateInfo.name,
-      userId: salesAssociateInfo.userID,
-      password: salesAssociateInfo.password,
-      address: salesAssociateInfo.address,
-      commissionToInsert: salesAssociateInfo.commisionToInsert
-    };
-    */
-
-    console.log("Payload being sent:", JSON.stringify(payload));
-
-    try {
-      const response = await axios.post('http://localhost:3000/api/sales-associates', payload);
-    } catch (err) {
-      // ... error handling ... 
-       console.error("Error fetching data:", err);
-       setError(err.message || "Failed to send salesAssociateInfo."); // Set error message
-    } finally {
-       setIsLoading(false);
     }
   };
 
@@ -544,7 +541,7 @@ function App() {
     {viewState !== "login" &&
         <div>
           <ul>
-      <li><p><b>LOGGED IN AS: {currentSalesAssociateName.Name}</b></p></li>
+      <li><p><b>LOGGED IN AS: </b></p></li>
       <button className="LogOut" onClick={handleLogOut}>LOG OUT</button>
       </ul>
       <Header />
@@ -610,6 +607,7 @@ function App() {
   setShowQuoteInterface={setShowQuoteInterface}
   isLoading={isLoading}
   disableEditingFields={disableEditingFields}
+  setDisableEditingFields={setDisableEditingFields}
 />
   </div>
   </div>
@@ -626,7 +624,8 @@ function App() {
    {viewState === "admin" && 
         <AdminDashboard
         allQuotes={allQuotes}
-        onEditQuote={onEditQuote}
+        setShowQuoteInterface={setShowQuoteInterface}
+        onEditQuote={handleEditQuote}
         customers={customers}
         allLineItems={allLineItems}
         salesAssociates={salesAssociates}

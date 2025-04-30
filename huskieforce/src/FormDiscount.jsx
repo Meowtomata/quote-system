@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react'; // Import useEffect
 // Assuming props like lineItems, discountValue, setDiscountValue are passed in
 function FormDiscount({ lineItems = [], 
     discountValue, setDiscountValue,
-    isPercentage, setIsPercentage }) {
+    isPercentage, setIsPercentage,
+    disableEditing }) {
 
   const [finalTotal, setFinalTotal] = useState(0);
 
@@ -61,6 +62,7 @@ function FormDiscount({ lineItems = [],
     <select
       value={isPercentage.toString()}
       onChange={handleDiscountTypeChange}
+      disabled={disableEditing}
     >
       <option value="true">PERCENTAGE (%)</option>
       <option value="false">FIXED AMOUNT ($)</option>
@@ -72,6 +74,7 @@ function FormDiscount({ lineItems = [],
       onChange={(e) => setDiscountValue(e.target.value)}
       placeholder="ENTER DISCOUNT"
       min="0"
+      disabled={disableEditing}
     />
   </div>
 
