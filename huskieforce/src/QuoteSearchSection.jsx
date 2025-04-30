@@ -55,7 +55,7 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems, sa
           <tr>
             <th>QUOTE ID</th>
             <th>CUSTOMER NAME</th>
-            <th>ASSOC. ID</th>
+            <th>ASSOCIATE NAME</th>
             <th>STATUS</th>
             <th>FINAL PRICE</th>
             <th>CREATED DATE</th>
@@ -67,6 +67,10 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems, sa
             console.log(quote);
             const customer = customers.find(customer => customer.id === quote.CU_ID);
             const customerName = customer ? customer.name : 'N/A';
+
+            const associate = salesAssociates.find(associate => associate.SA_ID === quote.SA_ID);
+            const associateName = associate ? associate.Name : 'N/A';
+
             const lineItems = allLineItems.filter(lineItem => lineItem.QU_ID === quote.QU_ID);
             const totalPrice = lineItems.reduce((total, item) => total + item.Price, 0);
 
@@ -83,7 +87,7 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems, sa
               <tr key={quote.QU_ID}>
                 <td>{quote.QU_ID}</td>
                 <td>{customerName}</td>
-                <td>{quote.SA_ID}</td>
+                <td>{associateName}</td>
                 <td>{quote.Status}</td>
                 <td>{`$${parseFloat(finalPrice).toFixed(2)}`}</td>
                 <td>{quote.Created_Date ?quote.Created_Date : 'N/A'}</td>
