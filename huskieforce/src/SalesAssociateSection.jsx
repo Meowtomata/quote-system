@@ -19,7 +19,7 @@ function SalesAssociateSection({salesAssociates}) {
 
   return (
     <div className="sales-associate-container">
-      <h3>SALES ASSOCIATES</h3>
+      <h3>ASSOCIATES</h3>
       <table border="1" cellPadding="10">
         <thead>
           <tr>
