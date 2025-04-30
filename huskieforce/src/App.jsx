@@ -6,14 +6,11 @@ import Header from "./HuskieForceHeader.jsx"
 import CopyRight from "./HuskieForceCR.jsx";
 import Buttons from "./Buttons.jsx";
 import QuoteInterface from "./QuoteInterface.jsx";
-import QuoteList from "./QuoteList.jsx";
+import QuotesList from "./QuotesList.jsx";
 import CustomerSelector from './CustomerSelector.jsx';
-import './App.css'
+import './App.css';
 import LoginInterface from "./LoginInterface.jsx";
 import AdminDashboard from "./AdminDashboard.jsx";
-import DraftQuotesPage from "./DraftQuotesPage.jsx";
-import SanctionQuotesPage from "./SanctionQuotesPage.jsx";
-import OrderedQuotesPage from "./OrderedQuotesPage.jsx";
 
 function App() {
   // customer array will be retrieved from legacy database
@@ -83,7 +80,7 @@ function App() {
 }, []); // now re-runs when trigger changes
 
   
-  const handleEditQuote = async (quote, origin) => {
+  const handleEditQuote = async (quote) => {
     try {
       console.log("--- RUNNING handleEditQuote ---");
       const response = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
@@ -106,13 +103,12 @@ function App() {
       setQuoteInfo(mappedQuote);
       setIsEditing(true);
       setShowQuoteInterface(true);
-      console.log("origin :", origin);
 
-      if (origin === "finalized") {
+      if (quote.Status === "Finalized") {
         setDisableEditingFields({ email: true, lineItems: false, notes: false, discount: false });
-      } else if (origin === "sanctioned") {
+      } else if (origin === "Sanctioned") {
         setDisableEditingFields({ email: true, lineItems: true, notes: true, discount: false });
-      } else if (origin === "ordered") {
+      } else if (origin === "Ordered") {
         setDisableEditingFields({ email: true, lineItems: true, notes: true, discount: true });
       } else {
         setDisableEditingFields({ email: false, lineItems: false, notes: false, discount: false });
@@ -415,9 +411,11 @@ function App() {
     }
   };
 
-  const handleFinalizeQuote = async (quoteId) => {
+  const handleFinalizeQuote = async (quote) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
+      console.log("--- handleFinalizeQuote ---");
+      console.log(quote);
+      const response = await fetch(`http://localhost:3000/api/quotes/${quote.QU_ID}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ newStatus: "Finalized" })
@@ -426,7 +424,7 @@ function App() {
   
       if (!response.ok) throw new Error("Failed to update status");
   
-      console.log(`✅ Quote ${quoteId} updated to Finalized`);
+      console.log(`✅ Quote ${quote.QU_ID} updated to Finalized`);
   
       await fetchQuotes();
   
@@ -439,7 +437,8 @@ function App() {
 
   const handleOrderQuote = async (quote) => {
     try {
-      console.log(quote);
+      console.log("--- RUNNING handleOrderQuote ---");
+      console.log("quote : ", quote);
       const retrieveQuoteDetails = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
       const { quote: base, lineItems } = retrieveQuoteDetails.data;
 
@@ -493,9 +492,9 @@ function App() {
     }
   };
   
-  const handleSanctionQuote = async (quoteId, email) => {
+  const handleSanctionQuote = async (quote) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/quotes/${quoteId}/status`, {
+      const response = await fetch(`http://localhost:3000/api/quotes/${quote.QU_ID}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ newStatus: "Sanctioned" }) // or "Sanctioned"
@@ -506,7 +505,7 @@ function App() {
       }
   
   
-      alert(`Quote has been emailed to ${email}`);
+      alert(`Quote has been emailed to ${quote.Email}`);
       await fetchQuotes();
   
     } catch (error) {
@@ -591,17 +590,23 @@ function App() {
           <div>
           <Buttons setViewState={setViewState}/>
           {viewState == "sanction" && 
-          <SanctionQuotesPage 
+          <QuotesList 
             onEditQuote={handleEditQuote} 
-            onSanctionQuote={handleSanctionQuote}
-            finalizedQuotes={finalizedQuotes}
+            onUpdateStatus={handleSanctionQuote}
+            quotes={finalizedQuotes}
+            allLineItems={allLineItems}
+            customers={customers}
+            salesAssociates={salesAssociates}
           />
               }
           {viewState == "order" && 
-          <OrderedQuotesPage
-            onEditQuote={handleEditQuote}
-            onOrderQuote={handleOrderQuote} 
-            sanctionedQuotes={sanctionedQuotes}
+          <QuotesList 
+            onEditQuote={handleEditQuote} 
+            onUpdateStatus={handleOrderQuote}
+            quotes={sanctionedQuotes}
+            allLineItems={allLineItems}
+            customers={customers}
+            salesAssociates={salesAssociates}
           />
               }
 
@@ -636,12 +641,13 @@ function App() {
                   setCustomerID={(value) => updateQuoteField('customerID', value)}
                   onAddNewQuote={handleAddNewQuoteClick}
                 />
-                <DraftQuotesPage
-                  onEditQuote={handleEditQuote}
-                  onFinalizeQuote={handleFinalizeQuote}
-                  draftQuotes={draftedQuotes}
+                <QuotesList 
+                  onEditQuote={handleEditQuote} 
+                  onUpdateStatus={handleFinalizeQuote}
+                  quotes={draftedQuotes}
                   allLineItems={allLineItems}
                   customers={customers}
+                  salesAssociates={salesAssociates}
                 />
               </div>
             )}
