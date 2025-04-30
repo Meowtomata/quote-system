@@ -73,7 +73,7 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems }) 
                 <td>{quote.Created_Date ?quote.Created_Date : 'N/A'}</td>
                 <td>
                   <div className="button-group">
-                    <button className="Edit" onClick={() => onEditQuote(quote, "draft")}>VIEW</button>
+                    <button className="Edit" onClick={() => onEditQuote(quote, "ordered")}>VIEW</button>
                   </div>
                 </td>
               </tr>

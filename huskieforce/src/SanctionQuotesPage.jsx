@@ -39,7 +39,7 @@ const SanctionQuotesPage = ({ onEditQuote, onSanctionQuote, finalizedQuotes }) =
               <td>{quote.Created_Date ? new Date(quote.Created_Date).toLocaleDateString() : 'N/A'}</td>
               <td>
               <div className="button-group">
-              <button className="Edit" onClick={() => onEditQuote(quote, "sanction", true)}>EDIT</button>
+              <button className="Edit" onClick={() => onEditQuote(quote, "finalized")}>EDIT</button>
                 <button className="Sanction" onClick={() => onSanctionQuote(quote.QU_ID, quote.Email)}>SANCTION</button>
               </div>
               </td>

@@ -83,6 +83,7 @@ function App() {
   
   const handleEditQuote = async (quote, origin) => {
     try {
+      console.log("--- RUNNING handleEditQuote ---");
       const response = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
       const { quote: base, lineItems, secretNotes } = response.data;
   
@@ -103,10 +104,13 @@ function App() {
       setQuoteInfo(mappedQuote);
       setIsEditing(true);
       setShowQuoteInterface(true);
+      console.log("origin :", origin);
 
-      if (origin === "sanction") {
+      if (origin === "finalized") {
         setDisableEditingFields({ email: true, lineItems: false, notes: false });
-      } else if (origin === "order") {
+      } else if (origin === "sanctioned") {
+        setDisableEditingFields({ email: true, lineItems: true, notes: true });
+      } else if (origin === "ordered") {
         setDisableEditingFields({ email: true, lineItems: true, notes: true });
       } else {
         setDisableEditingFields({ email: false, lineItems: false, notes: false });
@@ -214,13 +218,7 @@ function App() {
       console.error("Update failed:", err.response?.data || err.message);
     }
   };
-  
-  
-  const onEditQuote = (quote) => {
-    setSelectedQuote(quote); // or whatever logic you use
-    setViewState("editQuote");
-  };
-  
+
   /*const updateSalesAssociate = async (associate) => {
     try {
       await axios.put(`http://localhost:3000/api/sales-associates/${associate.SA_ID}`, {
@@ -332,6 +330,7 @@ function App() {
     }));
 
     setIsEditing(false);
+    setDisableEditingFields({...false, ...false, ...false});
     setShowQuoteInterface(true);
   };
 
@@ -607,6 +606,7 @@ function App() {
   setShowQuoteInterface={setShowQuoteInterface}
   isLoading={isLoading}
   disableEditingFields={disableEditingFields}
+  setDisableEditingFields={setDisableEditingFields}
 />
   </div>
   </div>
@@ -623,7 +623,8 @@ function App() {
    {viewState === "admin" && 
         <AdminDashboard
         allQuotes={allQuotes}
-        onEditQuote={onEditQuote}
+        setShowQuoteInterface={setShowQuoteInterface}
+        onEditQuote={handleEditQuote}
         customers={customers}
         allLineItems={allLineItems}
         salesAssociates={salesAssociates}

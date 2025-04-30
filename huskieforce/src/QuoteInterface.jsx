@@ -13,7 +13,8 @@ function QuoteInterface({
   isEditing,
   setShowQuoteInterface,
   isLoading,
-  disableEditingFields={}
+  disableEditingFields={},
+  setDisableEditingFields,
 }) {
 
   const handleSubmitClick = (event) => {

@@ -42,7 +42,7 @@ function SalesAssociateSection({salesAssociates, addAssociate, updateAssociate, 
               <td>{a.Address}</td>
               <td>
                 <div className="button-group">
-                <button className="Edit" onClick={() => setEditing(a)}>EDIT</button>
+                <button className="Edit" onClick={() => onEditQuote(quote, "ordered")}>EDIT</button>
                 <button className="Delete" onClick={() => handleDelete(a.SA_ID)}>DELETE</button>
                 </div>
               </td>
