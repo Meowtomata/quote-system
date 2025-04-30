@@ -561,16 +561,6 @@ function App() {
     )}
 
     <div>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link> {/* Link to the Home page */}
-          </li>
-          <li>
-            <Link to="/drafts">About</Link> {/* Link to the About page */}
-          </li>
-        </ul>
-      </nav>
       <Routes>
         <Route path="/admin" element={
         <AdminDashboard
