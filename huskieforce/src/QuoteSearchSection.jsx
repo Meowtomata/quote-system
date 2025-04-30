@@ -8,7 +8,7 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems }) 
 
   const filtered = allQuotes.filter((q) =>
     (!filters.status || q.Status === filters.status) &&
-    (!filters.createed_date || q.Created_Date >= filters.start_date)
+    (!filters.start_date || q.Created_Date >= filters.start_date)
   );
 
   return (
