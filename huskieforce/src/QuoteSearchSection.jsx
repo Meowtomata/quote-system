@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import SalesAssociateSection from "./SalesAssociateSection";
-
 
 function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems, salesAssociates}) {
   const [filters, setFilters] = useState({ status: "", associate: "", customer: "", start_date: "",end_date: "" });
@@ -11,7 +9,7 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems, sa
     (!filters.status || q.Status === filters.status) &&
     (!filters.start_date || q.Created_Date >= filters.start_date) &&
     (!filters.end_date || q.Created_Date <= filters.end_date ) &&
-    (!filters.associate || q.SA_ID == filters.associate)
+    (!filters.associate || q.SA_ID?.toString() === filters.associate)
   );
 
   return (
@@ -24,14 +22,20 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems, sa
         value={filters.customer}
         onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
       />
-      {/*needs to be label properly */}
-      <select onChange={(e) => setFilters({ ...filters, associate: e.target.value })}>
+      <select 
+        value={filters.associate}
+        onChange={(e) => setFilters({ ...filters, associate: e.target.value })}>
         <option value="">- Sale associate -</option>
+        {salesAssociates.map((a)=>(
+          <option key={a.User_ID} value={a.User_ID}>
+            {a.Name}
+          </option>
+        ))}
       </select>
       <input
           type="date"
           // need to add labels for this
-          value={filters.start_Date}
+          value={filters.start_date}
           onChange={(e) => setFilters({ ...filters, start_date: e.target.value })}
       />
       <input
