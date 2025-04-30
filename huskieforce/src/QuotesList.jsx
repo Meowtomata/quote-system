@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import QuoteList from './QuoteList';
 
-
-const SanctionQuotesPage = ({ onEditQuote, onUpdateStatus, quotes, allLineItems, customers, salesAssociates }) => {
+const QuotesList = ({ onEditQuote, onUpdateStatus, quotes, allLineItems, customers, salesAssociates }) => {
 
   return (
     <div className="quote-list-container">
@@ -73,4 +71,4 @@ const SanctionQuotesPage = ({ onEditQuote, onUpdateStatus, quotes, allLineItems,
   );
 };
 
-export default SanctionQuotesPage;
+export default QuotesList;

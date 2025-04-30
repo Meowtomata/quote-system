@@ -106,9 +106,9 @@ function App() {
 
       if (quote.Status === "Finalized") {
         setDisableEditingFields({ email: true, lineItems: false, notes: false, discount: false });
-      } else if (origin === "Sanctioned") {
+      } else if (quote.Status === "Sanctioned") {
         setDisableEditingFields({ email: true, lineItems: true, notes: true, discount: false });
-      } else if (origin === "Ordered") {
+      } else if (quote.Status === "Ordered") {
         setDisableEditingFields({ email: true, lineItems: true, notes: true, discount: true });
       } else {
         setDisableEditingFields({ email: false, lineItems: false, notes: false, discount: false });
