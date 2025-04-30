@@ -57,6 +57,22 @@ function App() {
       setIsLoading(false); // Hide loading indicator
     }
   };
+  
+  const fetchAssociates = async () => {
+    setIsLoading(true); // Show loading indicator
+    setError(null);     // Clear previous errors
+    try {
+      const response = await axios.get("http://localhost:3000/api/sales-associates");
+      setSalesAssociates(Array.isArray(response.data.data) ? response.data.data : []);
+
+    } catch (err) {
+      console.error("Failed to load associates:", err);
+      setError("Failed to load associates.");
+      setSalesAssociates([]); // Clear on error
+    } finally {
+      setIsLoading(false); // Hide loading indicator
+    }
+  };
 
   useEffect(() => {
     fetchQuotes(); // Call the reusable function on mount
@@ -318,27 +334,47 @@ function App() {
   const handleOrderQuote = async (quote) => {
     try {
       console.log(quote);
-      const response = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
-      const { quote: base, lineItems } = response.data;
+      const retrieveQuoteDetails = await axios.get(`http://localhost:3000/api/quotes/${quote.QU_ID}/details`);
+      const { quote: base, lineItems } = retrieveQuoteDetails.data;
 
       const customer = customers.find(customer => customer.id === base.CU_ID);
+      const totalPrice = lineItems.reduce((total, item) => total + item.Price, 0);
+
+      let finalPrice = totalPrice;
+      if (quote.Discount_Amount != null) {
+        if (quote.isPercentage) {
+          finalPrice = totalPrice - (totalPrice * (parseFloat(quote.Discount_Amount) / 100));
+        } else {
+          finalPrice = totalPrice - parseFloat(quote.Discount_Amount);
+        }
+      }
+
+      const fulfilled_date = new Date();
 
       const payload = {
         order: uuidv4(),
         custid: base.CU_ID,
         associate: base.SA_ID, 
-        amount: lineItems.reduce((total, item) => total + item.Price, 0),
+        amount: totalPrice, 
         name: customer.name,
-        processDay: new Date(),
-        commission: "106",
+        processDay: fulfilled_date, 
       };
-      console.log(response);
 
       console.log("Payload being sent:", JSON.stringify(payload));
 
-      const response2 = await axios.post("https://blitz.cs.niu.edu/purchaseorder", payload);
-      // console.log(response2);
+      const sendOrderData = await axios.post("https://blitz.cs.niu.edu/purchaseorder", payload);
 
+      const commissionAmount = parseFloat(sendOrderData.data.commission) / 100 * finalPrice;
+
+      const response = await fetch(`http://localhost:3000/api/sales-associate/${base.SA_ID}/commission`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commission: commissionAmount }) 
+      });
+
+      alert(`Quote has been processed for ${fulfilled_date}\nComission of ${commissionAmount} has been credited to ...`);
+
+      await fetchAssociates();
       await fetchQuotes();
     } catch (error) {
       console.error("❌ Error updating quote to ordered:", error);
@@ -433,7 +469,7 @@ function App() {
     {viewState !== "login" &&
         <div>
           <ul>
-      <li><p><b>LOGGED IN AS: {currentSalesAssociateName.Name}</b></p></li>
+      <li><p><b>LOGGED IN AS: </b></p></li>
       <button className="LogOut" onClick={handleLogOut}>LOG OUT</button>
       </ul>
       <Header />

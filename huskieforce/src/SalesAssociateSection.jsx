@@ -32,7 +32,7 @@ function SalesAssociateSection({salesAssociates}) {
               <td>{a.Name}</td>
               <td>{a.User_ID}</td>
               <td>{a.Password}</td>
-              <td>${a.Accumulated_Commission.toFixed(2)}</td>
+              <td>{`$${parseFloat(a.Accumulated_Commission).toFixed(2)}`}</td>
               <td>{a.Address}</td>
               <td>
                 <div className="button-group">
