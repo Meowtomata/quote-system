@@ -36,10 +36,6 @@ const LoginInterface = ({ salesAssociates, setViewState, setSalesAssociateID }) 
 
 
   return (
-    <div>
-    <div className="huskieforceLogo">
-        <img src={logo} />
-        </div>
     <div className="login-container">
       <h1>LOGIN</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>} {/*Display errors */}
@@ -72,7 +68,6 @@ const LoginInterface = ({ salesAssociates, setViewState, setSalesAssociateID }) 
         <button className="Login" type="submit">LOGIN</button>
         </div>
       </form>
-    </div>
     </div>
   );
 };
