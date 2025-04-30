@@ -2,14 +2,13 @@ import React, { useState } from "react";
 
 
 function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems }) {
-  const [filters, setFilters] = useState({ status: "", associate: "", customer: "" });
+  const [filters, setFilters] = useState({ status: "", associate: "", customer: "", start_date: "",end_date: "" });
 
   console.log("Value of allQuotes:", allQuotes);
 
   const filtered = allQuotes.filter((q) =>
-    (!filters.status || q.Status === filters.status) // &&
-    // (!filters.associate || q.SA_ID.includes(filters.associate)) &&
-    // (!filters.customer || q.CU_ID.toLowerCase().includes(filters.customer.toLowerCase()))
+    (!filters.status || q.Status === filters.status) &&
+    (!filters.createed_date || q.Created_Date >= filters.start_date)
   );
 
   return (
@@ -26,6 +25,17 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems }) 
         placeholder="ASSOCIATE:"
         value={filters.associate}
         onChange={(e) => setFilters({ ...filters, associate: e.target.value })}
+      />
+      <input
+          type="date"
+          // need to add labels for this
+          value={filters.start_Date}
+          onChange={(e) => setFilters({ ...filters, start_date: e.target.value })}
+      />
+      <input
+          type="date"
+        //value={startDate}
+         // onChange={(e) => setStartDate(e.target.value)}
       />
       <select onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
         <option value="">- STATUS -</option>
