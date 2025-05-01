@@ -15,7 +15,7 @@ function SalesAssociateForm({ onSave, initial, editing, onCancel, clearFormTrigg
         name: initial.Name,
         userId: initial.User_ID,
         password: initial.Password,
-        commission: initial.Accumulated_Commission,
+        commission: parseFloat(initial.Accumulated_Commission),
         address: initial.Address,
       });
     }

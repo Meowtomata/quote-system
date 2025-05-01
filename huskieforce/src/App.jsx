@@ -218,14 +218,21 @@ function App() {
         address: associate.address,
         accumulatedCommission: associate.accumulatedCommission
       });
-  
-      const updated = {
+
+      const response = await axios.get("http://localhost:3000/api/sales-associates");
+      setSalesAssociates(response.data);
+    } catch (err) {
+      console.error("Update failed:", err.response?.data || err.message);
+    }
+  };
+
+      /*const updated = {
         SA_ID: associate.SA_ID,
         Name: associate.name,
         User_ID: associate.userId,
         Password: associate.password,
         Address: associate.address,
-        accumulatedCommission: parseFloat(associate.accumulatedCommission) ?? 0
+        accumulatedCommission: parseFloat(associate.accumulatedCommission) || 0
       };
   
       setSalesAssociates((prev) =>
@@ -235,6 +242,7 @@ function App() {
       console.error("Update failed:", err.response?.data || err.message);
     }
   };
+*/
 
   // when clicking add new quote, display quote interface
   const [showQuoteInterface, setShowQuoteInterface] = useState(false); 
