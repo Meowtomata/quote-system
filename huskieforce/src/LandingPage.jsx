@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 function LandingPage({setViewState}) {
   return (
     <div className="login-container">
-      <h1>WELCOME!</h1>
       <h2>SELECT AN INTERFACE</h2>
       <div className="button-group">
         <Link to="/sales-associate" >
