@@ -216,7 +216,7 @@ function App() {
         userId: associate.userId,
         password: associate.password,
         address: associate.address,
-        accumulatedCommission: associate.commission
+        accumulatedCommission: associate.accumulatedCommission
       });
   
       const updated = {
@@ -225,7 +225,7 @@ function App() {
         User_ID: associate.userId,
         Password: associate.password,
         Address: associate.address,
-        accumulatedCommission: parseFloat(associate.commission) ?? 0
+        accumulatedCommission: parseFloat(associate.accumulatedCommission) ?? 0
       };
   
       setSalesAssociates((prev) =>
