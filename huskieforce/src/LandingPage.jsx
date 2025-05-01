@@ -4,17 +4,17 @@ import { Link } from 'react-router-dom';
 function LandingPage({setViewState}) {
   return (
     <div className="login-container">
-      <h1>Welcome!</h1>
-      <h2>Which interface would you like to look at?</h2>
+      <h1>WELCOME!</h1>
+      <h2>WHICH INTERFACE WOULD YOU LIKE TO LOOK AT?</h2>
       <div className="button-group">
         <Link to="/sales-associate" >
-          <button onClick={() => setViewState("login")}>Sales Associate</button>
+          <button onClick={() => setViewState("login")}>SALES ASSOCIATE</button>
         </Link>
         <Link to="/headquarters">
-          <button onClick={() => setViewState("sanction")}>Headquarters</button>
+          <button onClick={() => setViewState("sanction")}>HEADQUARTERS</button>
         </Link>
         <Link to="/administrator">
-          <button onClick={() => setViewState("admin")}>Administrator</button>
+          <button onClick={() => setViewState("admin")}>ADMINISTRATOR</button>
         </Link>
       </div>
     </div>
