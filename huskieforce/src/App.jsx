@@ -417,6 +417,7 @@ function App() {
       const { quote: base, lineItems } = retrieveQuoteDetails.data;
 
       const customer = customers.find(customer => customer.id === base.CU_ID);
+      const associate = salesAssociates.find(associate => associate.SA_ID === base.SA_ID);
       const totalPrice = lineItems.reduce((total, item) => total + item.Price, 0);
 
       let finalPrice = totalPrice;
@@ -451,7 +452,7 @@ function App() {
         body: JSON.stringify({ commission: commissionAmount }) 
       });
 
-      alert(`Quote has been processed for ${fulfilled_date}\nComission of ${commissionAmount} has been credited to ...`);
+      alert(`Quote has been processed for ${fulfilled_date}\nComission of ${commissionAmount} has been credited to ${associate.Name}`);
 
       const setQuoteStatus = await fetch(`http://localhost:3000/api/quotes/${quote.QU_ID}/status`, {
         method: 'PUT',
