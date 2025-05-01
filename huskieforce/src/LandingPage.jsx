@@ -14,7 +14,7 @@ function LandingPage({setViewState}) {
           <button onClick={() => setViewState("sanction")}>Headquarters</button>
         </Link>
         <Link to="/administrator">
-          <button onClick={() => setViewState("admin")}>Headquarters</button>
+          <button onClick={() => setViewState("admin")}>Administrator</button>
         </Link>
       </div>
     </div>
