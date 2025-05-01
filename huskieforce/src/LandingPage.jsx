@@ -5,7 +5,7 @@ function LandingPage({setViewState}) {
   return (
     <div className="login-container">
       <h1>WELCOME!</h1>
-      <h2>WHICH INTERFACE WOULD YOU LIKE TO LOOK AT?</h2>
+      <h2>SELECT AN INTERFACE</h2>
       <div className="button-group">
         <Link to="/sales-associate" >
           <button onClick={() => setViewState("login")}>SALES ASSOCIATE</button>
