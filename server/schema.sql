@@ -39,4 +39,4 @@ CREATE TABLE IF NOT EXISTS SecretNotes (
 );
 
 INSERT INTO Sales_Associate (SA_ID, Name, User_ID, Password, Address)
-VALUES (1, "Samantha", "Username123", "Password123", "123 Address Lane");
+VALUES (1, "John Doe", "Username123", "Password123", "123 Address Lane");
