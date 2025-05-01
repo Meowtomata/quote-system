@@ -37,7 +37,7 @@ function QuoteSearchSection({allQuotes, onEditQuote, customers, allLineItems, sa
        onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
      />
      <input
-       placeholder="Sale Associate:"
+       placeholder="ASSOCIATE:"
        value={filters.associate}
        onChange={(e) => setFilters({ ...filters, associate: e.target.value })}
      />
