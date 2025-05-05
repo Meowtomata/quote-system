@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Routes, Route, Link } from 'react-router-dom'; // Import necessary components
+import { Routes, Route, Link } from 'react-router-dom';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import Header from "./HuskieForceHeader.jsx"
@@ -21,7 +21,6 @@ function App() {
   const [error, setError] = useState(null);          // State to track errors
   const [previousView, setPreviousView] = useState("sanction"); // Default to sanction
 
-
   const [disableEditingFields, setDisableEditingFields] = useState({
     email: false,
     lineItems: false,
@@ -29,10 +28,8 @@ function App() {
     discount: false
   });
 
-
   const [viewState, setViewState] = useState("login");
   const [selectedQuote, setSelectedQuote] = useState(null);
-
   const [loggedInUserID, setLoggedInUserID] = useState(-1);
 
   // quotes will be passed down and filtered by status
@@ -79,7 +76,6 @@ function App() {
     fetchQuotes(); // Call the reusable function on mount
 }, []); // now re-runs when trigger changes
 
-
   const handleEditQuote = async (quote) => {
     try {
       console.log("--- RUNNING handleEditQuote ---");
@@ -118,8 +114,6 @@ function App() {
       console.error("Failed to fetch full quote data:", err);
     }
   };
-
-  // ============
 
     // Generic updater for simple fields like email, discountAmount, isPercentage
     const updateQuoteField = useCallback((fieldName, value) => {
@@ -225,24 +219,6 @@ function App() {
       console.error("Update failed:", err.response?.data || err.message);
     }
   };
-
-      /*const updated = {
-        SA_ID: associate.SA_ID,
-        Name: associate.name,
-        User_ID: associate.userId,
-        Password: associate.password,
-        Address: associate.address,
-        accumulatedCommission: parseFloat(associate.accumulatedCommission) || 0
-      };
-  
-      setSalesAssociates((prev) =>
-        prev.map((a) => (a.SA_ID === associate.SA_ID ? updated : a))
-      );
-    } catch (err) {
-      console.error("Update failed:", err.response?.data || err.message);
-    }
-  };
-*/
 
   // when clicking add new quote, display quote interface
   const [showQuoteInterface, setShowQuoteInterface] = useState(false); 
@@ -386,10 +362,10 @@ function App() {
       if (!response.ok) throw new Error("Failed to update quote");
   
       await fetchQuotes();
-      console.log("✅ Quote updated successfully!");
+      console.log("Quote updated successfully!");
       setShowQuoteInterface(false); // close the modal
     } catch (err) {
-      console.error("❌ Error updating quote:", err);
+      console.error("Error updating quote:", err);
     }
   };
 
@@ -406,12 +382,12 @@ function App() {
   
       if (!response.ok) throw new Error("Failed to update status");
   
-      console.log(`✅ Quote ${quote.QU_ID} updated to Finalized`);
+      console.log(`Quote ${quote.QU_ID} updated to Finalized`);
   
       await fetchQuotes();
   
     } catch (error) {
-      console.error("❌ Error updating quote to ordered:", error);
+      console.error("Error updating quote to ordered:", error);
     }
   }; 
   
@@ -471,7 +447,7 @@ function App() {
       await fetchAssociates();
       await fetchQuotes();
     } catch (error) {
-      console.error("❌ Error updating quote to ordered:", error);
+      console.error("Error updating quote to ordered:", error);
     }
   };
   
@@ -480,7 +456,7 @@ function App() {
       const response = await fetch(`http://localhost:3000/api/quotes/${quote.QU_ID}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newStatus: "Sanctioned" }) // or "Sanctioned"
+        body: JSON.stringify({ newStatus: "Sanctioned" })
       });
   
       if (!response.ok) {

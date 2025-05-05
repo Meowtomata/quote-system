@@ -475,8 +475,7 @@ app.post("/api/quotes", (req, res) => {
   });
 });
 
-
-// PUT Endpoint to update associate accumulated commission 
+// PUT Endpoint to update associate accumulated commission
 app.put("/api/sales-associate/:id/commission", (req, res) => {
   const associateID = req.params.id;
   const { commission } = req.body;
@@ -498,13 +497,16 @@ app.put("/api/sales-associate/:id/commission", (req, res) => {
       }
 
       if (!row) {
-        return res.status(404).json({ error: "No sales associate found with that ID" });
+        return res
+          .status(404)
+          .json({ error: "No sales associate found with that ID" });
       }
 
       const currentCommission = row.Accumulated_Commission || 0; // Default to 0 if null
 
       // 2. Calculate the new accumulated commission
-      const newAccumulatedCommission = parseFloat(currentCommission) + parseFloat(commission);
+      const newAccumulatedCommission =
+        parseFloat(currentCommission) + parseFloat(commission);
 
       // 3. Update the database with the new total
       db.run(
@@ -519,7 +521,11 @@ app.put("/api/sales-associate/:id/commission", (req, res) => {
           }
 
           if (this.changes === 0) {
-            return res.status(404).json({ error: "No sales associate found with that ID (update failed)" });
+            return res
+              .status(404)
+              .json({
+                error: "No sales associate found with that ID (update failed)",
+              });
           }
 
           res.status(200).json({
@@ -532,8 +538,6 @@ app.put("/api/sales-associate/:id/commission", (req, res) => {
     }
   );
 });
-
-
 
 // PUT Endpoint to update quote status (e.g., from Draft to Sanctioned or Ordered)
 app.put("/api/quotes/:id/status", (req, res) => {

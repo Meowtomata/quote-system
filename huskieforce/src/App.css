@@ -1,26 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700;900&display=swap");
 
-/* App.css */
 .App-container {
-  position: relative; /* Allow for overlay */
+  position: relative;
 }
-/* OverlayComponent.css */
 .overlay {
-  /* --- Key Part 2 --- */
-  position: absolute; /* Position relative to the nearest positioned ancestor */
-  /* --- */
-
-  /* Positioning within the relative parent */
-  top: 50px; /* Example: 50px from the top of App-container */
-  left: 50px; /* Example: 50px from the left of App-container */
-  /* Or use top: 50%; left: 50%; transform: translate(-50%, -50%); for centering */
-
-  /* --- Key Part 3 --- */
-  z-index: 10; /* Ensures it appears above other non-positioned/lower z-index content */
-  /* --- */
-
-  /* Visual styling */
-  background-color: #3c3c3c; /* Semi-transparent blue */
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  z-index: 10;
+  background-color: #3c3c3c;
   color: white;
   padding: 25px;
   border: 1px solid #888;
@@ -29,7 +17,6 @@
   justify-content: center;
 }
 
-/* Optional: Style for the close button */
 .overlay-close-button {
   margin-top: 10px;
   padding: 5px 10px;

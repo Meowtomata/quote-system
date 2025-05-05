@@ -57,7 +57,7 @@ const QuotesList = ({ onEditQuote, onUpdateStatus, quotes, allLineItems, custome
                       ? "FINALIZE"
                       : quote.Status === "Sanctioned"
                       ? "ORDER"
-                      : "UNKNOWN STATUS" // Optional: Handle other potential statuses
+                      : "UNKNOWN STATUS" 
                     }
                      </button>
                   </div>
